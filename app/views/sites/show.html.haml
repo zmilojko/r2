@@ -1,0 +1,24 @@
+%p#notice= notice
+
+%p
+  %b Name:
+  = @site.name
+%p
+  %b Default ssl:
+  = @site.default_ssl
+%p
+  %b Mode:
+  = @site.mode
+%p
+  %b Status:
+  = @site.status
+%p
+  %b Start time:
+  = @site.start_time
+%p
+  %b End time:
+  = @site.end_time
+
+= link_to 'Edit', edit_site_path(@site)
+\|
+= link_to 'Back', sites_path

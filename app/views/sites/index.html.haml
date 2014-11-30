@@ -1,0 +1,29 @@
+%h1 Listing sites
+
+%table
+  %tr
+    %th Name
+    %th Default ssl
+    %th Mode
+    %th Status
+    %th Start time
+    %th End time
+    %th
+    %th
+    %th
+
+  - @sites.each do |site|
+    %tr
+      %td= site.name
+      %td= site.default_ssl
+      %td= site.mode
+      %td= site.status
+      %td= site.start_time
+      %td= site.end_time
+      %td= link_to 'Show', site
+      %td= link_to 'Edit', edit_site_path(site)
+      %td= link_to 'Destroy', site, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Site', new_site_path
