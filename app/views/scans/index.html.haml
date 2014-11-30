@@ -1,0 +1,21 @@
+%h1 
+  Scans for 
+  = link_to @site.name, @site
+
+%table.table
+  %tr
+    %th Url
+    %th Last visited
+    %th
+    %th
+
+  - @scans.each do |scan|
+    %tr
+      %td= link_to (scan.url.empty? or scan.url == "/" ? "(root)" : scan.url), [@site, scan]
+      %td= scan.last_visited.nil? ? "never" : scan.last_visited
+      %td= link_to 'Edit', edit_site_scan_path(@site, scan)
+      %td= link_to 'Destroy', [@site, scan], :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Scan', new_site_scan_path(@site)

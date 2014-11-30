@@ -1,0 +1,18 @@
+%p#notice= notice
+
+%p
+  %b Url:
+  = @scan.url
+%p
+  %b Content:
+  = @scan.content
+%p
+  %b Last visited:
+  = @scan.last_visited
+%p
+  %b Site:
+  = @scan.site
+
+= link_to 'Edit', edit_site_scan_path(@site, @scan)
+\|
+= link_to 'Back', site_scans_path(@site)

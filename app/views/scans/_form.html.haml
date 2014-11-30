@@ -1,0 +1,17 @@
+= bootstrap_form_for [@site, @scan] do |f|
+  - if @scan.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@scan.errors.count, "error")} prohibited this scan from being saved:"
+      %ul
+        - @scan.errors.full_messages.each do |msg|
+          %li= msg
+
+  .field
+    = f.text_field :url
+  .field
+    = f.text_area :content
+  .field
+    = f.text_field :last_visited
+    = f.check_box :never_visited if @scan.last_visited.nil?
+  .actions
+    = f.submit 'Save'

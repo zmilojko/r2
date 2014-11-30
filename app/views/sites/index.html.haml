@@ -1,26 +1,25 @@
 %h1 Listing sites
 
-%table
+%table.table
   %tr
     %th Name
     %th Default ssl
     %th Mode
     %th Status
-    %th Start time
-    %th End time
+    %th Scanning time
+    %th Scans
     %th
     %th
     %th
 
   - @sites.each do |site|
     %tr
-      %td= site.name
+      %td= link_to site.name, site
       %td= site.default_ssl
       %td= site.mode
       %td= site.status
-      %td= site.start_time
-      %td= site.end_time
-      %td= link_to 'Show', site
+      %td= site.scanning_schedule
+      %td= link_to site.scanning_status, site_scans_path(site)
       %td= link_to 'Edit', edit_site_path(site)
       %td= link_to 'Destroy', site, :method => :delete, :data => { :confirm => 'Are you sure?' }
 

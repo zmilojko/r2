@@ -6,6 +6,7 @@ class Site
   field :status, type: String, default: :off
   field :start_time, type: Integer, default: 0
   field :end_time, type: Integer, default: 0
+  has_many :scans
   
   # modes: :off, :on (runs by schedule), :forced
   def mode_sym
@@ -14,5 +15,22 @@ class Site
   # modes: :off, :on, :asleep
   def status_sym
     mode.to_sym
+  end
+  def scanning_schedule
+    if start_time == 0 and end_time == 0
+      "always on"
+    else
+      "#{start_time} -> #{end_time}"
+    end
+  end
+  
+  def scanning_status
+    if total_scans = scans.count == 0
+      "not_started"
+    elsif nil_scans = scans.where(last_visited: nil).count > 0
+      "#{nil_scans} / #{total_scans}"
+    else
+      "first round done"
+    end
   end
 end
