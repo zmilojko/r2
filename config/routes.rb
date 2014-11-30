@@ -9,5 +9,5 @@ Rails.application.routes.draw do
     resources :users, as: 'users'
   end
 
-  root to: 'home#index'
+  root to: redirect('/sites', status: 302)
 end
