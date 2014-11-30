@@ -6,6 +6,7 @@ class Site
   field :status, type: String, default: :off
   field :start_time, type: Integer, default: 0
   field :end_time, type: Integer, default: 0
+  embeds_many :rules
   has_many :scans
   
   # modes: :off, :on (runs by schedule), :forced
@@ -25,10 +26,10 @@ class Site
   end
   
   def scanning_status
-    if total_scans = scans.count == 0
-      "not_started"
-    elsif nil_scans = scans.where(last_visited: nil).count > 0
-      "#{nil_scans} / #{total_scans}"
+    if (total_scans = scans.count) == 0
+      "not seeded"
+    elsif (nil_scans = scans.where(last_visited: nil).count) > 0
+      "#{total_scans - nil_scans} / #{total_scans}"
     else
       "first round done"
     end

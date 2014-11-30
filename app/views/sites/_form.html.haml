@@ -1,4 +1,4 @@
-= form_for @site do |f|
+= bootstrap_form_for @site do |f|
   - if @site.errors.any?
     #error_explanation
       %h2= "#{pluralize(@site.errors.count, "error")} prohibited this site from being saved:"
@@ -7,22 +7,16 @@
           %li= msg
 
   .field
-    = f.label :name
     = f.text_field :name
   .field
-    = f.label :default_ssl
     = f.check_box :default_ssl
   .field
-    = f.label :mode
     = f.text_field :mode
   .field
-    = f.label :status
     = f.text_field :status
   .field
-    = f.label :start_time
     = f.number_field :start_time
   .field
-    = f.label :end_time
     = f.number_field :end_time
   .actions
     = f.submit 'Save'

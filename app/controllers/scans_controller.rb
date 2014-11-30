@@ -1,11 +1,11 @@
 class ScansController < ApplicationController
-  before_action :set_scan, only: [:show, :edit, :update, :destroy]
   before_action :set_site
+  before_action :set_scan, only: [:show, :edit, :update, :destroy]
 
   # GET /scans
   # GET /scans.json
   def index
-    @scans = Scan.all
+    @scans = @site.scans.all
   end
 
   # GET /scans/1
@@ -28,6 +28,7 @@ class ScansController < ApplicationController
   # POST /scans.json
   def create
     @scan = Scan.new(scan_params)
+    @scan.site = @site
 
     respond_to do |format|
       if @scan.save
@@ -67,7 +68,7 @@ class ScansController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_scan
-      @scan = Scan.find(params[:id])
+      @scan = @site.scans.find(params[:id])
     end
     
     def set_site
