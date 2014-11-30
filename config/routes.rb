@@ -2,6 +2,7 @@ Rails.application.routes.draw do
 
   resources :sites do
     resources :scans
+    resources :rules
   end
 
   devise_for :users

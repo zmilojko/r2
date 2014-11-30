@@ -1,0 +1,16 @@
+= bootstrap_form_for [@site, @rule] do |f|
+  - if @rule.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@rule.errors.count, "error")} prohibited this rule from being saved:"
+      %ul
+        - @rule.errors.full_messages.each do |msg|
+          %li= msg
+
+  .field
+    = f.text_field :regex
+  .field
+    = f.check_box :positive
+  .field
+    = f.number_field :order
+  .actions
+    = f.submit 'Save'

@@ -1,0 +1,19 @@
+%h1 Listing rules for #{@site.name}
+
+%table.table
+  %tr
+    %th Regex
+    %th Positive
+    %th Order
+    %th
+
+  - @rules.sort_by{|r| r.order}.each do |rule|
+    %tr
+      %td= link_to rule.regex, edit_site_rule_path(@site, rule)
+      %td= rule.positive
+      %td= rule.order
+      %td= link_to 'Destroy', [@site, rule], :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Rule', new_site_rule_path(@site)

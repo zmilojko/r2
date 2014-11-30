@@ -7,8 +7,11 @@
     %th Mode
     %th Status
     %th Scanning time
-    %th Scans
-    %th
+    %th 
+      Scans
+      %br
+      (remaining / known)
+    %th Rules
     %th
     %th
 
@@ -20,6 +23,7 @@
       %td= site.status
       %td= site.scanning_schedule
       %td= link_to site.scanning_status, site_scans_path(site)
+      %td= link_to pluralize(site.rules.count, 'rule'), site_rules_path(site)
       %td= link_to 'Edit', edit_site_path(site)
       %td= link_to 'Destroy', site, :method => :delete, :data => { :confirm => 'Are you sure?' }
 
