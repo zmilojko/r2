@@ -6,6 +6,9 @@ class Site
   field :status, type: String, default: :off
   field :start_time, type: Integer, default: 0
   field :end_time, type: Integer, default: 0
+  field :use_ssl, type: Mongoid::Boolean, default: false
+  field :encoding, type: String, default: ""
+  field :ticket_no, type: String
   embeds_many :rules
   has_many :scans
   
@@ -13,7 +16,10 @@ class Site
   def mode_sym
     mode.to_sym
   end
-  # modes: :off, :on, :asleep
+  def mode_was_sym
+    mode_was.to_sym
+  end
+  # statuses: :off (as in completed or stopped by timer or mode set to off), :on, :asleep, :interrupted (as in a problem)
   def status_sym
     mode.to_sym
   end
@@ -33,5 +39,24 @@ class Site
     else
       "first round done"
     end
+  end
+  
+  before_validation do
+    if mode_changed? and mode_was_sym == :off and mode_sym == :on
+      puts "Decided to start the task on #{name}"
+      self.ticket_no = SecureRandom.hex
+      puts "My ticket no is #{ticket_no}"
+      @should_start_scanning = true
+    end
+    true
+  end
+  
+  after_save do
+    if @should_start_scanning
+      puts "Starting scanning task for #{name}"
+      Scanner.perform_async name, ticket_no
+    end
+    @should_start_scanning = false
+    true
   end
 end

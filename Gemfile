@@ -50,3 +50,9 @@ gem "factory_girl_rails", "~> 4.0"
 gem "tzinfo-data", platforms: [:mingw, :mswin, :x64_mingw]
 gem "tzinfo", platforms: [:mingw, :mswin, :x64_mingw]
 gem "devise", "~> 3.3.0"
+
+gem 'sidekiq'
+gem 'sinatra', '>= 1.3.0', :require => nil
+gem 'nokogiri'
+
+gem 'rest-client'

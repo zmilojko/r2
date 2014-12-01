@@ -10,7 +10,7 @@ class Scan
   end
   def never_visited= value
     if value.nil?
-      last_visited = nil?
+      last_visited = nil
     else
       last_visited = DateTime.now if last_visited.nil?
     end

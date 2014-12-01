@@ -1,3 +1,5 @@
+require 'sidekiq/web'
+
 Rails.application.routes.draw do
 
   resources :sites do
@@ -11,4 +13,8 @@ Rails.application.routes.draw do
   end
 
   root to: redirect('/sites', status: 302)
+  
+  # authenticate :user, lambda { |u| u.admin? } do
+    mount Sidekiq::Web => '/sidekiq'
+  # end
 end
