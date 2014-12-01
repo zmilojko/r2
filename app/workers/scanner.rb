@@ -80,7 +80,11 @@ class Scanner
     actual = 0
     
     all_links.each do |link|
-      new_url = link.attributes['href'].value
+      begin
+        new_url = link.attributes['href'].value
+      rescue
+        next
+      end
       # or now, search all links on the site
       # puts "    => found link to #{new_url}"
       if should_process_page new_url
