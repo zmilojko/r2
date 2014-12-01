@@ -41,6 +41,18 @@ class Site
     end
   end
   
+  def should_sleep
+    if mode_sym == :forced
+      false
+    elsif start_time == 0 and end_time == 0
+      "always on"
+    elsif start_time <= end_time
+      not Time.now.hour.between? start_time, end_time
+    else
+      Time.now.hour.between? end_time + 1, start_time - 1
+    end
+  end
+  
   before_validation do
     if mode_changed? and mode_was_sym == :off and mode_sym == :on
       puts "Decided to start the task on #{name}"

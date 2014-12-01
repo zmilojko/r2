@@ -119,6 +119,16 @@ class Scanner
         break
       end
       
+      if @site.should_sleep
+        if @site.status_sym != :asleep
+          puts "scanner for #{@site.name} going to sleep"
+          @site.status = :asleep
+          @site.save!
+        end
+        sleep 5
+        next
+      end
+      
       @site.status = :on
       @site.save!
       
