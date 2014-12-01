@@ -133,6 +133,8 @@ class Scanner
 
       process_url next_scan
     end
+    @site.status = :off
+    @site.save!
     puts "Completed scanning task for #{@site.name}"
   end
 end
