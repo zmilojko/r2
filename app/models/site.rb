@@ -14,14 +14,14 @@ class Site
   
   # modes: :off, :on (runs by schedule), :forced
   def mode_sym
-    mode.to_sym
+    (mode || :off).to_sym
   end
   def mode_was_sym
-    mode_was.to_sym
+    (mode_was || :off).to_sym
   end
   # statuses: :off (as in completed or stopped by timer or mode set to off), :on, :asleep, :interrupted (as in a problem)
   def status_sym
-    mode.to_sym
+    (status || :off).to_sym
   end
   def scanning_schedule
     if start_time == 0 and end_time == 0
