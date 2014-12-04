@@ -71,4 +71,8 @@ class Site
     @should_start_scanning = false
     true
   end
+  
+  def as_json(**args)
+    super(args).merge(scanning_schedule: scanning_schedule, scanning_status: scanning_status, sid: id.to_s)
+  end
 end

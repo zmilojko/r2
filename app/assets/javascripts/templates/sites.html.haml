@@ -30,14 +30,7 @@
       
       %td {{site.status}}
       %td {{site.scanning_schedule}}
-      %td
-        %a(href="#sites/{{site.id}}/scans") {{site.scanning_status}}
-      %td
-        %a(href="#sites/{{site.id}}/rules") {{site.rules.count}} rule(s)
-      %td 
-        %a(ng-click="edit_me()") Edit
-      %td
-        %a(ng-click="edit_me()") Delete
-
+      %td {{site.scanning_status}}
+      %td {{site.rules.count}} rule(s)
   %br
   %a(ng-click="edit_me()") New site

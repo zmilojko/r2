@@ -19,15 +19,15 @@ Site = $resource('/sites/:siteId', {siteId:'@id'},
             service.keepPinging()
             service.sites = server_response.data
       changeMode: (site, new_mode) ->
-        $http.patch("./sites/#{site.id.$oid}.json", {mode: new_mode}).then (server_response) ->
-          service.sites[i] = server_response.data for i in [0..service.sites.length - 1] when service.sites[i].id.$oid = site.id.$oid
+        $http.patch("./sites/#{site.sid}.json", {mode: new_mode}).then (server_response) ->
+          service.sites[i] = server_response.data for i in [0..service.sites.length - 1] when service.sites[i].sid = site.sid
       keepPinging: ->
         $timeout ->
           $http.get('./sites.json').then (server_response) ->
             for i in [(service.sites.length - 1) .. 0]
               is_there = false
               for j in [(server_response.data.length - 1) .. 0]
-                if service.sites[i].id.$oid == server_response.data[j].id.$oid
+                if service.sites[i].sid == server_response.data[j].sid
                   service.sites[i] = server_response.data[j]
                   is_there = true
                   server_response.data.splice(j,1)

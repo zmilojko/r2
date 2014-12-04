@@ -4,7 +4,14 @@ class SitesController < ApplicationController
   # GET /sites
   # GET /sites.json
   def index
-    @sites = Site.all
+    respond_to do |format|
+      format.html do 
+        @sites = Site.all
+      end
+      format.json do
+        render json: Site.all
+      end
+    end
   end
 
   # GET /sites/1
@@ -16,7 +23,7 @@ class SitesController < ApplicationController
         @site
       end
       format.json do
-        render json: Site.find_full_json(params[:id])
+        render json: @site
       end
     end
   end
@@ -38,7 +45,7 @@ class SitesController < ApplicationController
     respond_to do |format|
       if @site.save
         format.html { redirect_to @site, notice: 'Site was successfully created.' }
-        format.json { render :show, status: :created, location: @site }
+        format.json { render json: @site }
       else
         format.html { render :new }
         format.json { render json: @site.errors, status: :unprocessable_entity }
@@ -52,7 +59,7 @@ class SitesController < ApplicationController
     respond_to do |format|
       if @site.update(site_params)
         format.html { redirect_to @site, notice: 'Site was successfully updated.' }
-        format.json { render :show, status: :ok, location: @site }
+        format.json { render json: @site }
       else
         format.html { render :edit }
         format.json { render json: @site.errors, status: :unprocessable_entity }
