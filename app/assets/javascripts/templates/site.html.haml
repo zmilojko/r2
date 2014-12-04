@@ -1,8 +1,47 @@
 %div(ng-controller="SiteController")
-  %h1 Site: {{site.name}}
-  %p
-    %strong Mode:
-    {{site.mode}}
-  %p
-    %strong Status:
-    {{site.status}}
+  .row
+    .col-sm-6
+      %h1(ng-if="!(site_name == 'new')") Site: {{site.name}}
+  .row
+    .col-sm-6
+      %form(role="form")
+        .form-group(ng-if="site_name == 'new'")
+          %label Site name
+          %input#edit-site-name.form-control(type="text" placeholder="New site name: ggg.example.com" ng-model="site.name")
+        .checkbox
+          %label
+            %input(type="checkbox") Use SSL (https://...)
+        .form-group
+          %label Expected encoding
+          %input.form-control(type="text" placeholder="For example: UTF-8"model="site.encoding")
+        .form-group
+          %label Scanning time (leave empty for always)
+          .row
+            .col-sm-4
+              %input.form-control(type="text" placeholder="21 for 9pm" ng-model="site.start_time")
+            .col-sm-4
+              %input.form-control(type="text" placeholder="6 for 6am" ng-model="site.end_time")
+        .form-group(ng-repeat="rule in site.rules")
+          %label(ng-if="$index == 0") Rules
+          .input-group
+            %input.form-control(type="text" placeholder="Input new rule regex" ng-model="rule.regex" )
+            %span.input-group-addon(ng-click="removeRule(rule)")
+              %span.glyphicon.glyphicon-remove
+          .checkbox
+            %label
+              %input(type="checkbox") Positive
+        .form-group
+          %button.btn.btn-default(ng-disabled="!!site.rules.length && site.rules[site.rules.length - 1].regex == ''" ng-click="addRule(rule)") Add new rule
+        .form-group
+          %button.btn.btn-default(ng-click="save()") Save
+          %button.btn.btn-default(ng-click="cancel()") Back to site list
+          %button.btn.btn-default(confirmed-click="deleteSite()" ng-confirm-click="Are you absolutelly sure you want to delete a site and all its scans?") Delete this site!
+    .col-sm-6
+      .form-group
+        %input.form-control(type="text" placeholder="Enter new seed url, example: /location" ng-model="new_seed.url" )
+      .form-group
+        %button.btn.btn-default(ng-click="new_seed()") New Seed
+      %table.table
+        %tr(ng-repeat="s in seeds_and_scans")
+          %td s.url
+          %td s.last_visited

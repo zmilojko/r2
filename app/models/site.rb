@@ -75,4 +75,24 @@ class Site
   def as_json(**args)
     super(args).merge(scanning_schedule: scanning_schedule, scanning_status: scanning_status, sid: id.to_s)
   end
+  
+  def update(params)
+    self.name = params[:name] unless params[:name].nil?
+    self.use_ssl = params[:use_ssl]  unless params[:use_ssl].nil?
+    self.mode = params[:mode] unless params[:mode].nil?
+    self.start_time = params[:start_time] unless params[:start_time].nil?
+    self.end_time = params[:end_time] unless params[:end_time].nil?
+    self.encoding = params[:encoding] unless params[:encoding].nil?
+    #remove deleted rules
+    unless params[:rules].nil?
+      self.rules.delete_all 
+      params[:rules].each do |rule_params|
+        r = self.rules.find_or_initialize_by regex: rule_params[:regex]
+        r.regex = rule_params[:regex]
+        r.positive = rule_params[:positive]
+        r.order = rule_params[:order]
+      end
+    end
+    save
+  end
 end

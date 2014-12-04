@@ -9,32 +9,56 @@ Site = $resource('/sites/:siteId', {siteId:'@id'},
   ($http, $q, $timeout, localStorageService) -> 
     service =
       constructor: ->
-        @sites = null
+        @sites = []
+        @pinging = false
         service
       get_sites: ->
-        if @sites
+        if @pinging
           $q.when @sites
         else
-          $http.get('./sites.json').then (server_response) ->
-            service.keepPinging()
-            service.sites = server_response.data
+          service.doGetSites()
+          .then (sites) ->
+            service.keepPinging() unless service.pinging
+            service.sites
+      doGetSites: ->
+        defer = $q.defer()
+        $http.get('./sites.json')
+        .then (server_response) ->
+          service.sites.length = 0
+          Array.prototype.push.apply(service.sites, server_response.data)
+          defer.resolve(service.sites)
+        defer.promise
       changeMode: (site, new_mode) ->
         $http.patch("./sites/#{site.sid}.json", {mode: new_mode}).then (server_response) ->
           service.sites[i] = server_response.data for i in [0..service.sites.length - 1] when service.sites[i].sid = site.sid
       keepPinging: ->
+        service.pinging = true
         $timeout ->
-          $http.get('./sites.json').then (server_response) ->
-            for i in [(service.sites.length - 1) .. 0]
-              is_there = false
-              for j in [(server_response.data.length - 1) .. 0]
-                if service.sites[i].sid == server_response.data[j].sid
-                  service.sites[i] = server_response.data[j]
-                  is_there = true
-                  server_response.data.splice(j,1)
-                  break
-              unless is_there
-                service.sites.splice(i,1)
+          service.doGetSites()
+          .then (sites) ->
             service.keepPinging()
         , 2000
+      createSite: (site) ->
+        defer = $q.defer()
+        $http.post('./sites.json', site)
+        .then (server_response) ->
+          service.doGetSites()
+          .then (sites)->
+            defer.resolve(server_response.data)
+        defer.promise
+      saveSite: (site) ->
+        defer = $q.defer()
+        $http.put("./sites/#{site.sid}.json", site)
+        .then (server_response) ->
+          service.doGetSites().then (sites) ->
+            defer.resolve(server_response.data)
+        defer.promise
+      deleteSite: (site) ->
+        defer = $q.defer()
+        $http.delete("./sites/#{site.sid}.json")
+        .then (server_response) ->
+          service.doGetSites().then (sites) ->
+            defer.resolve(server_response.data)
+        defer.promise
     service.constructor()
 ]
