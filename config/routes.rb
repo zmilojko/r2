@@ -16,5 +16,6 @@ Rails.application.routes.draw do
   
   # authenticate :user, lambda { |u| u.admin? } do
     mount Sidekiq::Web => '/sidekiq'
+    # mount Genghis::Server.new, :at => '/genghis'
   # end
 end
