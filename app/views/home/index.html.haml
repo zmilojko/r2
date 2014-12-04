@@ -27,6 +27,14 @@
     -# If you need something from the Ruby code, set it up here
     -# %script
   %body(role="document")
-    %div.full_height(ng-view)
-      %h1(style="margin-top: 10px;")=t :'Please wait' # Please wait while the application loads!
+    .container
+      %nav.navbar.navbar-static-top.navbar-inverse(role="navigation")
+        .container-fluid
+          .navbar-header.pull-left
+            %a.navbar-brand(href="#")
+              =image_tag "logo.png", height: '20'
+              Refinder
+      #main(ng-view)
+        %div.full_height
+          %h1(style="margin-top: 10px;")=t :'Please wait' # Please wait while the application loads!
     = javascript_include_tag 'app'

@@ -1,0 +1,43 @@
+%div(ng-controller="SitesController")
+  %h1 Listing sites
+
+  %table.table
+    %tr
+      %th Name
+      %th Default ssl
+      %th Mode
+      %th Status
+      %th Scanning time
+      %th 
+        Scans
+        %br
+        (remaining / known)
+      %th Rules
+      %th
+      %th
+    %tr(ng-repeat="site in sites")
+      %td
+        %a(href="#sites/{{site.name}}") {{site.name}}
+      %td {{site.default_ssl}}
+      %td
+        {{site.mode}}
+        %button.btn.btn-default.btn-xs(type="button" ng-if="site.mode != 'on'" ng-click="changeMode(site, 'on')")
+          %span.glyphicon.glyphicon-play
+        %button.btn.btn-default.btn-xs(type="button" ng-if="site.mode != 'forced'" ng-click="changeMode(site, 'forced')")
+          %span.glyphicon.glyphicon-forward
+        %button.btn.btn-default.btn-xs(type="button" ng-if="site.mode != 'off'" ng-click="changeMode(site, 'off')")
+          %span.glyphicon.glyphicon-stop
+      
+      %td {{site.status}}
+      %td {{site.scanning_schedule}}
+      %td
+        %a(href="#sites/{{site.id}}/scans") {{site.scanning_status}}
+      %td
+        %a(href="#sites/{{site.id}}/rules") {{site.rules.count}} rule(s)
+      %td 
+        %a(ng-click="edit_me()") Edit
+      %td
+        %a(ng-click="edit_me()") Delete
+
+  %br
+  %a(ng-click="edit_me()") New site

@@ -10,6 +10,15 @@ class SitesController < ApplicationController
   # GET /sites/1
   # GET /sites/1.json
   def show
+    respond_to do |format|
+      format.html do 
+        set_site
+        @site
+      end
+      format.json do
+        render json: Site.find_full_json(params[:id])
+      end
+    end
   end
 
   # GET /sites/new

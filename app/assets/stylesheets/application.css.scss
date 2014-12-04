@@ -19,3 +19,10 @@
   right: 0;
   padding: 8px 14px;
 }
+
+.pointer,
+[ng-click],
+[data-ng-click],
+[x-ng-click] {
+    cursor: pointer;
+}

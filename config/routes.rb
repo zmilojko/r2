@@ -12,7 +12,7 @@ Rails.application.routes.draw do
     resources :users, as: 'users'
   end
 
-  root to: redirect('/sites', status: 302)
+  root to: "home#index"
   
   # authenticate :user, lambda { |u| u.admin? } do
     mount Sidekiq::Web => '/sidekiq'

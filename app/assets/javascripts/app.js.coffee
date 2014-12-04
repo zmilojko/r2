@@ -20,9 +20,12 @@
 
 @r2_module.config(['$routeProvider', ($routeProvider) ->
   $routeProvider.
-    #when('/url', {
-    #  templateUrl: 'template.html',
-    #}).
+    when('/sites', {
+      templateUrl: 'sites.html',
+    }).
+    when('/sites/:siteName', {
+      templateUrl: 'site.html',
+    }).
     otherwise({
       templateUrl: 'home.html',
     }) 
