@@ -3,7 +3,10 @@ require 'sidekiq/web'
 Rails.application.routes.draw do
 
   resources :sites do
-    resources :scans
+    resources :scans do
+      get 'report', on: :collection
+      post 'newseed', on: :collection
+    end
     resources :rules
   end
 

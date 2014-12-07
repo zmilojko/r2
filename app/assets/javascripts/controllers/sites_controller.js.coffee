@@ -3,6 +3,7 @@
     $scope.sites = []
     siteService.get_sites().then (sites)->
       $scope.sites = sites
+      siteService.getSeedsAndScans(null)
     $scope.changeMode = (site, new_mode) ->
       siteService.changeMode(site, new_mode)
 ]

@@ -5,9 +5,54 @@ class ScansController < ApplicationController
   # GET /scans
   # GET /scans.json
   def index
-    @scans = @site.scans.all
+    if params[:limit]
+      recent_scans = @site.scans.where(:last_visited.ne => nil).order(:last_visited).limit(params[limit])
+      @scans = recent_scans
+    else
+      @scans = @site.scans.all
+    end
+    respond_to do |format|
+      format.html do 
+        @scans
+      end
+      format.json do
+        render json: @scans
+      end
+    end
+  end
+  
+  # GET /scans/resport.json
+  def report
+    unless params[:limit]
+      params[:limmit] = 10
+    end
+    respond_to do |format|
+      format.json do
+        render json: @site.scan_report
+      end
+    end
   end
 
+  # POST /sites/1/scan/newseed
+  def newseed
+    puts "newseed CALLED!!!"
+    @scan = Scan.new
+    @scan.url = params[:url]
+    puts params
+    @scan.site = @site
+    @scan.seed = true
+
+    respond_to do |format|
+      if @scan.save
+        format.html { redirect_to [@site, @scan], notice: 'Seed was successfully created.' }
+        format.json { render json: @scan }
+      else
+        format.html { render :new }
+        format.json { render json: @scan.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+  
   # GET /scans/1
   # GET /scans/1.json
   def show

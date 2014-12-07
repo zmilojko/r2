@@ -40,8 +40,34 @@
       .form-group
         %input.form-control(type="text" placeholder="Enter new seed url, example: /location" ng-model="new_seed.url" )
       .form-group
-        %button.btn.btn-default(ng-click="new_seed()") New Seed
-      %table.table
-        %tr(ng-repeat="s in seeds_and_scans")
-          %td s.url
-          %td s.last_visited
+        %button.btn.btn-default(ng-click="addNewSeed()") New Seed
+      %ul#tabs.nav.nav-tabs{"data-tabs" => "tabs"}
+        %li(ng-class="tab == 'seeds' ? 'active' : ''")
+          %a(data-toggle="tab" ng-click="tab = 'seeds'") Seeds
+        %li(ng-class="tab == 'latest-scans' ? 'active' : ''")
+          %a(data-toggle="tab" ng-click="tab = 'latest-scans'") Latest
+        %li(ng-class="tab == 'next-scans' ? 'active' : ''")
+          %a(data-toggle="tab" ng-click="tab = 'next-scans'") Next
+      #my-tab-content.tab-content
+        #seeds.tab-pane(ng-class="tab == 'seeds' ? 'active' : ''")
+          %p(ng-if="seeds_and_scans.seeds.length == 0") No seeds. You should probably add a seed.
+          %table.table
+            %tr(ng-repeat="s in seeds_and_scans.seeds")
+              %td {{s.url}}
+              %td {{s.last_visited}}
+              %td(ng-click="removeSeed(s)")
+                %a Remove
+        #latest-scans.tab-pane(ng-class="tab == 'latest-scans' ? 'active' : ''")
+          %p(ng-if="seeds_and_scans.latest_scans.length == 0") Nothing scanned yet
+          %table.table
+            %tr(ng-repeat="s in seeds_and_scans.latest_scans")
+              %td {{s.url}}
+              %td {{s.last_visited}}
+              %td {{s.seed ? "(seed)" : ""}}
+        #next-scans.tab-pane(ng-class="tab == 'next-scans' ? 'active' : ''")
+          %p(ng-if="seeds_and_scans.next_scans.length == 0") Nothing left to scan
+          %table.table
+            %tr(ng-repeat="s in seeds_and_scans.next_scans")
+              %td {{s.url}}
+              %td {{s.seed ? "(seed)" : ""}}
+

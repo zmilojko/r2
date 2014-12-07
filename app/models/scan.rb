@@ -3,6 +3,7 @@ class Scan
   field :url, type: String
   field :content, type: String
   field :last_visited, type: Time, default: nil
+  field :seed, type: Mongoid::Boolean, default: false
   belongs_to :site
   
   def never_visited

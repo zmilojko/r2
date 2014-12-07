@@ -95,4 +95,15 @@ class Site
     end
     save
   end
+  
+  def scan_report limit: 10
+    results = {
+      seeds: scans.where(seed: true).limit(limit).as_json,
+      latest_scans: scans.where(:last_visited.ne => nil).order(last_visited: :desc).limit(limit).as_json,
+#      latest_scans: scans.where('$or: [{"last_visited": {$exists: false}},{"last_visited":null}]').order(last_visited: :desc).limit(limit),
+      next_scans: scans.where(last_visited: nil).limit(limit).as_json
+    }
+    puts results
+    results
+  end
 end
