@@ -54,7 +54,7 @@ class Site
   end
   
   before_validation do
-    if mode_changed? and mode_was_sym == :off and mode_sym == :on
+    if mode_changed? and mode_was_sym == :off and mode_sym != :off
       puts "Decided to start the task on #{name}"
       self.ticket_no = SecureRandom.hex
       puts "My ticket no is #{ticket_no}"

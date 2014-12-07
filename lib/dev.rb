@@ -6,7 +6,7 @@ def reset_case
   Scan.delete_all
   Site.first.scans.create url: "/", last_visited: nil
 
-  s.mode = :on
+  s.mode = :forced
   s.save!
 end
 
