@@ -51,23 +51,59 @@ module Scraper
   end
 end
 
-class Scraperer
-  def self.filter when: nil
+
+class Boo
+  def remember &block
+    @proc = block
   end
   
-  def self.scrape
+  def exec
+    @proc.call
+  end
+end
+
+
+class Scraperer
+  @@site_name = nil
+  @@filters = []
+  @@analyses = []
+  
+  def self.site name
+    @@site_name = name
+  end
+  
+  def self.filter only_for: nil, regex: nil, &block
+    if block
+      raise "cannot have both regex and block in same filter" if regex
+      filter_proc = block
+    else
+      filter_proc = Proc.new {|url| url.match regex }
+    end
+    @@filters << { 
+      only_for: [only_for],
+      block: filter_proc
+    }
+  end
+  
+  def self.analyze name: nil, &block
+    raise "you should define site name before defining analysis" unless @@site_name
+    @@analyses << {
+      name: name || @@site_name,
+      block: block
+      }
   end
 end
 
 class Vet < Scraperer
+  site "www.suomenelaintuhkaus.fi"
   # here can make filter when: :scraping, :crowling, :always (default)
-  filter when: :scraping do |url|
+  filter only_for: :scraping do |url|
     url[/\/\d{2}/][/\d+/].to_i.between?(11,55)
   end
   
   # possible to give name: 'some_name', that will be remembered in the database
   # that could also be the only parameter, and the rest in the block
-  scrape do
+  analyze do
     find css: 'td.content_table' do # as: :td
       find css: 'p' # as :p', note that this is inside :td block
     end
