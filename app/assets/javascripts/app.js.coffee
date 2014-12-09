@@ -26,6 +26,9 @@
     when('/sites/:siteName', {
       templateUrl: 'site.html',
     }).
+    when('/404', {
+      templateUrl: '404.html',
+    }).
     otherwise({
       templateUrl: 'home.html',
     }) 

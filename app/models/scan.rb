@@ -16,4 +16,8 @@ class Scan
       last_visited = DateTime.now if last_visited.nil?
     end
   end
+  
+  def html
+    Nokogiri::HTML(content)
+  end
 end

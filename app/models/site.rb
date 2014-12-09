@@ -12,6 +12,10 @@ class Site
   embeds_many :rules
   has_many :scans
   
+  def self.[] url
+    self.find_by name: url.to_s
+  end
+  
   # modes: :off, :on (runs by schedule), :forced
   def mode_sym
     (mode || :off).to_sym

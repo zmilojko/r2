@@ -4,7 +4,7 @@
       %h1(ng-if="!(site_name == 'new')") Site: {{site.name}}
   .row
     .col-sm-6
-      %form(role="form")
+      %form(role="form" name="form")
         .form-group(ng-if="site_name == 'new'")
           %label Site name
           %input#edit-site-name.form-control(type="text" placeholder="New site name: ggg.example.com" ng-model="site.name")
