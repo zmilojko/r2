@@ -1,3 +1,5 @@
+# -*- coding: UTF-8 -*-
+
 def reset_case
   s = Site.first
   s.mode = :off

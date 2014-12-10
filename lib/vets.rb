@@ -1,3 +1,5 @@
+# -*- coding: UTF-8 -*-
+
 if $dev_debug
   load 'harvester.rb'
 else
@@ -18,9 +20,9 @@ class Vet < Harvester
       find css: 'p' # as :p', note that this is inside :td block
     end
 
-    scrape do
+    scrape :p do
       city td.css('h1').text, :mandatory
-      name p.css_any('a', 'strong').text, :mandatory, :sort
+      name p.css_any('a', 'strong').text, :sort
       url p.href
       info p.text
       # origin scan.url
@@ -36,12 +38,12 @@ end
 
 
 def parsevets
-  Site["www.suomenelaintuhkaus.fi"].scans.scrape do |scan|
+  Site["www.suomenelaintuhkaus.fi"].scans.scrape2 do |scan|
     Thread.current.thread_variable_set('scan', scan)
     next unless check? { scan.url[/\/\d{2}/][/\d+/].to_i.between?(11,55) }
     puts "checking scan #{scan.url}"
-    scan.html.css('td.content_table').scrape do |td|
-      td.css('p').scrape mandatory: [:name, :city] do |p|
+    scan.html.css('td.content_table').scrape2 do |td|
+      td.css('p').scrape2 mandatory: [:name, :city] do |p|
         {
           city: td.css('h1').text,
           name: p.css_any('a', 'strong').text,
