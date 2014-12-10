@@ -62,15 +62,24 @@ class Harvester
     raise "nothing to harvest. Define a harvest before performing it." unless current_harvest
     results = []
     
-    Site[@@site_name].scans.each do |scan|
+    site = Site[@@site_name]
+    sort = nil
+    
+    site.scans.each do |scan|
       if do_filter scan, filter_for: :harvesting
-        results.push *(harvest_for harvest: current_harvest, 
-            name: 'document',
-            node: scan.html)
+        new_results = harvest_for harvest: current_harvest, name: 'document', node: scan.html
+        results.push *new_results
+        # this is a good place to save
+        new_results.select! { |r| r[:object] }
+        new_results.map! do |r|
+          sort = r[:sort]
+          r[:object]
+        end
+        site.crops.create! new_results
       end
     end
     
-    sort = nil
+    
     results.select! { |r| r[:object] }
     results.map! do |r|
       sort = r[:sort]

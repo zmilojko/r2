@@ -11,6 +11,7 @@ class Site
   field :ticket_no, type: String
   embeds_many :rules
   has_many :scans
+  has_many :crops
   
   def self.[] url
     self.find_by name: url.to_s
