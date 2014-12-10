@@ -1,7 +1,10 @@
 $dev_debug = true
 $dev_random = Random.new.hash
-load 'harvester_parser.rb'
-
+if $dev_debug
+  load 'harvester_parser.rb'
+else
+  require 'harvester_parser'
+end
 # reload! ; load 'vets.rb' ; g = parsevets ; g.count
 
 #  h = Scan.find_by(url:"/19").html.css('td.content_table').css('p'); 7
@@ -47,6 +50,8 @@ class Harvester
       Thread.current.thread_variable_set('scan', scan)
       if do_filter scan, filter_for: :harvesting
         puts "harvesting #{scan.url}" if $dev_debug
+        
+        
       end
     end
   end

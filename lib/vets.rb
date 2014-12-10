@@ -1,4 +1,8 @@
-load 'harvester.rb'
+if $dev_debug
+  load 'harvester.rb'
+else
+  require 'harvester'
+end
 
 class Vet < Harvester
   site "www.suomenelaintuhkaus.fi"
