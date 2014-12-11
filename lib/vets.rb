@@ -35,26 +35,3 @@ class Vet < Harvester
     # with FIND command
   end
 end
-
-
-# def parsevets
-#   Site["www.suomenelaintuhkaus.fi"].scans.scrape2 do |scan|
-#     Thread.current.thread_variable_set('scan', scan)
-#     next unless check? { scan.url[/\/\d{2}/][/\d+/].to_i.between?(11,55) }
-#     puts "checking scan #{scan.url}"
-#     scan.html.css('td.content_table').scrape2 do |td|
-#       td.css('p').scrape2 mandatory: [:name, :city] do |p|
-#         {
-#           city: td.css('h1').text,
-#           name: p.css_any('a', 'strong').text,
-#           url: p.href,
-#           info: p.text,
-#           origin: scan.url
-#         }
-#       end
-#     end
-#   end.sort_by {|x| x[:name]}
-# end
-
-
-

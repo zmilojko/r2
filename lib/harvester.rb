@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 
-$dev_debug = true
+$dev_debug = false
 $dev_random = Random.new.hash
 if $dev_debug
   load 'harvester_parser.rb'
@@ -9,8 +9,6 @@ else
 end
 # reload! ; load 'vets.rb' ; g = parsevets ; g.count
 # reload! ; load 'vets.rb' ; k = Vet.perform_harvest ; k.count
-
-#  h = Scan.find_by(url:"/19").html.css('td.content_table').css('p'); 7
 
 class Harvester
   @@site_name = nil
@@ -39,10 +37,6 @@ class Harvester
     }
   end
   
-#     find css: 'td.content_table' do # as: :td
-#       find css: 'p' # as :p', note that this is inside :td block
-#     end
-  
   def self.harvest name: nil, &block
     raise "you should define site name before defining a harvest" unless @@site_name
     processor = FindProcessor.new block: block
@@ -60,16 +54,20 @@ class Harvester
     name ||= @@site_name
     current_harvest = @@crops[@@crops.index{|x| x[:name] == name}]
     raise "nothing to harvest. Define a harvest before performing it." unless current_harvest
-    results = []
+    results_count = 0
     
     site = Site[@@site_name]
-    sort = nil
+    sort = nil # sort is remembered, but is not currently used
+               # it will be used later, when these definitions become
+               # part of the Site object. Sort will be used when querying
+               # data, not when storing it. Also, we will need to be indexing
+               # some data somehow.
     
     site.scans.each do |scan|
       if do_filter scan, filter_for: :harvesting
         new_results = harvest_for harvest: current_harvest, name: 'document', node: scan.html
-        results.push *new_results
-        # this is a good place to save
+        results += new_results.count
+
         new_results.select! { |r| r[:object] }
         new_results.map! do |r|
           sort = r[:sort]
@@ -78,15 +76,6 @@ class Harvester
         site.crops.create! new_results
       end
     end
-    
-    
-    results.select! { |r| r[:object] }
-    results.map! do |r|
-      sort = r[:sort]
-      r[:object]
-    end
-    raise "currently can sort only by one field!" unless sort.length == 1
-    results.sort_by! {|r| r[sort[0]]} if sort
     results
   end
   
@@ -214,7 +203,6 @@ class Harvester
           f[:only_for].include? filter_for
         begin
           return f[:rule] == :allow if scan.instance_exec &f[:block]
-          # above line will return false if rule is :deny (or anything else)
         rescue
         end
       end
