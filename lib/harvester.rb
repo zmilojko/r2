@@ -25,7 +25,7 @@ class Harvester
     @@filters
   end
   
-  def self.filter only_for: nil, regex: nil, rule: :allow, &block
+  def self.filter only_for: :always, regex: nil, rule: :allow, &block
     if block
       raise "cannot have both regex and block in same filter" if regex
       filter_proc = block
@@ -33,7 +33,7 @@ class Harvester
       filter_proc = Proc.new { url.match regex }
     end
     @@filters << { 
-      only_for: [only_for],
+      only_for: [only_for].flatten,
       rule: rule, # it can also be deny, and such must be defined before allow
       block: filter_proc
     }
