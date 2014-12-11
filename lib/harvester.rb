@@ -1,14 +1,6 @@
 # -*- coding: UTF-8 -*-
 
-$dev_debug = false
-$dev_random = Random.new.hash
-if $dev_debug
-  load 'harvester_parser.rb'
-else
-  require 'harvester_parser'
-end
-# reload! ; load 'vets.rb' ; g = parsevets ; g.count
-# reload! ; load 'vets.rb' ; k = Vet.perform_harvest ; k.count
+require 'harvester_parser'
 
 class Harvester
   @@site_name = nil
@@ -66,7 +58,6 @@ class Harvester
     site.scans.each do |scan|
       if do_filter scan, filter_for: :harvesting
         new_results = harvest_for harvest: current_harvest, name: 'document', node: scan.html
-        results += new_results.count
 
         new_results.select! { |r| r[:object] }
         new_results.map! do |r|
@@ -74,9 +65,10 @@ class Harvester
           r[:object]
         end
         site.crops.create! new_results
+        results_count += new_results.count
       end
     end
-    results
+    results_count
   end
   
   private
