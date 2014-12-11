@@ -1,12 +1,11 @@
 # -*- coding: UTF-8 -*-
 
-if $dev_debug
-  load 'harvester.rb'
-else
-  require 'harvester'
-end
+load 'harvester.rb'
 
-class Vet < Harvester
+# reload! ; x = "www.suomenelaintuhkaus.fi" ; load "crops/#{x}.rb" ; Site[x].crops.delete_all ; k = Vet.perform_harvest ; g = Site[x].crops ; k
+
+
+class WwwSuomenelaintuhkausFi < Harvester
   site "www.suomenelaintuhkaus.fi"
   # here can make filter when: :harvesting, :crowling, :always (default)
   filter only_for: :harvesting do
