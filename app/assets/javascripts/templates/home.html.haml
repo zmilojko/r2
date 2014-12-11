@@ -1,9 +1,31 @@
 .row(ng-controller="SitesController")
-  .col-sm-6
-    %a(href="#/sites")
-      %h1 Sites
-    %a(href="/sidekiq")
-      %h1 Work monitor
-  .col-sm-6
-    %h1#second_page_title Second page!
-    %p This is the second page.
+  .col-sm-8.site-table
+    %h3 Sites
+    .row(ng-repeat="site in sites")
+      .col-sm-5.col-xs-12
+        %a(href="#sites/{{site.name}}") {{site.name}}
+      .col-sm-4.col-xs-7.col-sm-offset-0.col-xs-offset-2
+        %span.label(ng-class="{'label-success': site.status=='on', 'label-warning': site.status=='asleep', 'label-danger': site.status=='interruped', 'label-default': site.status=='off'}") {{site.status}}
+        %span.badge(ng-if="site.mode != site.status") {{site.mode}}
+        %span(ng-if="site.status == 'asleep'") {{site.scanning_schedule}}
+        %span(ng-if="site.status == 'asleep' || site.status == 'on'") ({{site.scanning_status}})
+      .col-sm-3.col-xs-3
+        %span(style="float: right")
+          %button.btn.btn-default.btn-xs(type="button" ng-if="site.mode != 'on'" ng-click="changeMode(site, 'on')")
+            %span.glyphicon.glyphicon-play
+          %button.btn.btn-default.btn-xs(type="button" ng-if="site.mode != 'forced'" ng-click="changeMode(site, 'forced')")
+            %span.glyphicon.glyphicon-forward
+          %button.btn.btn-default.btn-xs(type="button" ng-if="site.mode != 'off'" ng-click="changeMode(site, 'off')")
+            %span.glyphicon.glyphicon-stop
+    .row
+      .col-xs-12
+        .input-group.input-group-sm
+          %input.form-control(placeholder="www.new_site_to_monitor.xxx")
+          %span.input-group-btn
+            %button.btn.btn-default(type="button") Make it!
+  .col-sm-4
+    %h3 Tools and gadgets
+    %ul
+      %li
+        %a(href="/sidekiq")
+          %h4 Work monitor

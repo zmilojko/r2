@@ -30,3 +30,18 @@
 input.ng-dirty {
   background-color: #dca8a3;
 }
+
+.site-table {
+  > div.row {
+      padding: $table-cell-padding;
+      line-height: $line-height-base;
+      vertical-align: top;
+      border-top: 1px solid $table-border-color;
+    }
+  > div.row:nth-child(odd) {
+    background-color: $table-bg-accent;
+    > div {
+      background-color: $table-bg-accent;
+    }
+  }
+}
