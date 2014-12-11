@@ -212,9 +212,10 @@ class Harvester
       if filter_for == :anything or 
           f[:only_for].include? :always or
           f[:only_for].include? filter_for
-        if check? { scan.instance_exec &f[:block] }
-          return f[:rule] == :allow
+        begin
+          return f[:rule] == :allow if scan.instance_exec &f[:block]
           # above line will return false if rule is :deny (or anything else)
+        rescue
         end
       end
     end
