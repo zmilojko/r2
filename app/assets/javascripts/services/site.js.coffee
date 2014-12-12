@@ -56,7 +56,8 @@ Site = $resource('/sites/:siteId', {siteId:'@id'},
           if service.current_site == current_site && current_site
             service.doGetScans(current_site)
             .then (scans) ->
-              service.keepPingingScans(current_site)
+              unless window.stopScanning
+                service.keepPingingScans(current_site)
         , 2000 if service.current_site == current_site && current_site
       doGetSites: ->
         defer = $q.defer()
@@ -68,13 +69,13 @@ Site = $resource('/sites/:siteId', {siteId:'@id'},
         defer.promise
       changeMode: (site, new_mode) ->
         $http.patch("./sites/#{site.sid}.json", {mode: new_mode}).then (server_response) ->
-          service.sites[i] = server_response.data for i in [0..service.sites.length - 1] when service.sites[i].sid = site.sid
+          service.sites[i] = server_response.data.site for i in [0..service.sites.length - 1] when service.sites[i].sid == site.sid
       keepPinging: ->
         service.pinging = true
         $timeout ->
           service.doGetSites()
           .then (sites) ->
-            service.keepPinging()
+            service.keepPinging() unless window.stopScanning
         , 2000
       createSite: (site) ->
         defer = $q.defer()

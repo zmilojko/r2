@@ -50,7 +50,7 @@ class Site
     if mode_sym == :forced
       false
     elsif start_time == 0 and end_time == 0
-      "always on"
+      false
     elsif start_time <= end_time
       not Time.now.hour.between? start_time, end_time
     else

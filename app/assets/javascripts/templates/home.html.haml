@@ -20,9 +20,9 @@
     .row
       .col-xs-12
         .input-group.input-group-sm
-          %input.form-control(placeholder="www.new_site_to_monitor.xxx")
+          %input.form-control(placeholder="www.new_site_to_monitor.xxx" ng-model="new_site_name")
           %span.input-group-btn
-            %button.btn.btn-default(type="button") Make it!
+            %button.btn.btn-default(type="button" ng-click="newSiteButtonClicked()") Make it!
   .col-sm-4
     %h3 Tools and gadgets
     %ul
