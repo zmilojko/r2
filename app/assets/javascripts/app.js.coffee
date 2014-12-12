@@ -29,8 +29,11 @@
     when('/404', {
       templateUrl: '404.html',
     }).
-    otherwise({
+    when('/', {
       templateUrl: 'home.html',
+    }).
+    otherwise({
+      templateUrl: '404.html',
     }) 
 ])
 
