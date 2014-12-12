@@ -6,6 +6,8 @@ class Scanner
   
   def initialize
     @cookies = nil
+    @converters = nil
+    @some_previously_used_encoding = nil
   end
   
   def full_url(url)
@@ -13,7 +15,7 @@ class Scanner
       # this is a full url
       url
     else 
-      "http#{}://#{@site.name}#{url[0] == "/" ? "" : "/"}#{url}"
+      "http#{'s' if @site.use_ssl}://#{@site.name}#{url[0] == "/" ? "" : "/"}#{url}"
     end
   end
   
@@ -23,22 +25,41 @@ class Scanner
         user_agent: "re-bot",
         cookies: @cookies
     @cookies = response.cookies unless response.cookies.blank?
-    
-    unless @converter or @site.encoding.blank?
-      # example of encoding: "ISO-8859-1"
-      #TODO: should also try to read the value from the file
-      @converter = Encoding::Converter.new(@site.encoding,"UTF-8")
-    end
     response
   end
   
   def convert_to_utf page
-    unless @site.encoding.blank?
-      page = @converter.convert page
+    doc = Nokogiri::HTML(page)
+    encoding = nil
+    doc.xpath('//meta').each do |meta_tag|
+      begin
+        content_attr = meta_tag.attributes['content'].value
+        encoding = content_attr[/charset=([\w\-]+)/,1]
+      rescue
+      end
+    end
+    
+    encoding ||= @site.encoding
+    encoding ||= @some_previously_used_encoding
+    
+    unless encoding.blank?
+      # now we have the best guess for encoding, but that still be illegal
+      # first try to get or create the Converter, if that works, we believe
+      # encoding info is ok
+      begin
+        @converters[encoding] ||= Encoding::Converter.new(encoding,"UTF-8")
+      rescue
+        encoding = nil
+      end
+    end
+    unless encoding.blank?
+      # if nobody set encoding to nil, we have the converter!
+      @some_previously_used_encoding ||= encoding
+      page = @converters[encoding].convert page
     end
     page
   end
-  
+
   def should_process_page url
     #for now, check that it is on our site
     if /^http/.match url
@@ -137,6 +158,7 @@ class Scanner
       if next_scan.nil?
         puts "Completed scanning"
         @site.status = :off
+        @site.mode = :off
         @site.save!
         break;
       end
@@ -144,6 +166,7 @@ class Scanner
       process_url next_scan
     end
     @site.status = :off
+    @site.mode = :off
     @site.save!
     puts "Completed scanning task for #{@site.name}"
   end
