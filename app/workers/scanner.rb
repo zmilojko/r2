@@ -57,7 +57,7 @@ class Scanner
     encoding = @site.encoding if encoding.blank?
     encoding = @some_previously_used_encoding if encoding.blank?
     
-    if encoding.downcase == "utf-8"
+    if (not encoding.blank?) and encoding.downcase == "utf-8"
       puts "  => Content is UTF-8"
       return page
     end
