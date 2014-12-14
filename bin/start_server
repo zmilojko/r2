@@ -1,16 +1,33 @@
 #!/bin/bash
 
+if [ $# -eq 2 ]
+  then
+  echo "using sidekiq queue $1, port $2"
+  export refinder_queue=$1
+fi
+if [ $# -eq 1 ]
+  then
+  echo "using sidekiq queue $1, default port"
+  export refinder_queue=$1
+fi
 if [ $# -eq 0 ]
   then
-  echo "using default sidekiq queue"
+  echo "using default sidekiq queue, default port"
   export refinder_queue=
-else
-  echo "using sidekiq queue $1"
-  export refinder_queue=$1
+fi
+if [ $# -gt 2 ]
+  then
+  echo "Too many parameters"
+  exit
 fi
 
 rake sidekiq:start
 echo "Sidekiq started, do 'tail -f log/sidekiq.log' to see logs"
-rails s
+if [ $# -eq 2 ]
+  then
+  rails s -p $2
+else
+  rails s
+fi
 echo "Rails server shut down, shutting down sidekiq"
 rake sidekiq:stop
