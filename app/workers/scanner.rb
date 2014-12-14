@@ -1,8 +1,10 @@
 require 'rest_client'
+
 STDOUT.sync = true
 
 class Scanner
   include Sidekiq::Worker
+  sidekiq_options :queue => SidekiqCtrl.defaultQueue
   
   def initialize
     @cookies = nil

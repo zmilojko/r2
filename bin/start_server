@@ -1,0 +1,16 @@
+#!/bin/bash
+
+if [ $# -eq 0 ]
+  then
+  echo "using default sidekiq queue"
+  export refinder_queue=
+else
+  echo "using sidekiq queue $1"
+  export refinder_queue=$1
+fi
+
+rake sidekiq:start
+echo "Sidekiq started, do 'tail -f log/sidekiq.log' to see logs"
+rails s
+echo "Rails server shut down, shutting down sidekiq"
+rake sidekiq:stop
