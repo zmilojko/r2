@@ -8,6 +8,9 @@ class Scan
   field :scanning_error
   belongs_to :site
   
+  index({ site: 1, last_visited: 1 }, { background: true })
+  index({ site: 1, url: 1 }, { background: true })
+  
   def never_visited
     last_visited.nil?
   end
