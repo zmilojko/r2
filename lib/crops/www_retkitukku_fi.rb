@@ -10,6 +10,8 @@ class WwwRetkitukkuFi < Harvester
     %w(index.php catalog checkout control contacts customer customize 
     newsletter poll review sendfriend tag wishlist cron.php cron.sh error
     install license media).each {|w|return false if url[Regexp.new(w,"i")]}
+    return false if url.downcase.include? "#"
+    return false if url.downcase.include? "?"
     true
   end
   
