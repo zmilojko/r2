@@ -4,6 +4,13 @@ class Scanner
   include Sidekiq::Worker
   sidekiq_options :queue => SidekiqCtrl.defaultQueue
   
+  def log s
+    if @site
+      @my_logger ||= Logger.new Rails.root.join("log", "#{@site.real_code_file_name}_scan.log")
+      @my_logger.info s.to_s
+    end
+  end
+
   def initialize
     @cookies = nil
     @converters = {}
@@ -20,7 +27,7 @@ class Scanner
   end
   
   def get_page url
-    # puts "  => wanting to get #{url}, full: #{full_url(url)}"
+    # log "  => wanting to get #{url}, full: #{full_url(url)}"
     response = RestClient.get full_url(url),
         user_agent: "re-bot",
         cookies: @cookies
@@ -49,14 +56,14 @@ class Scanner
         end
       end
     rescue
-      puts "Unessuccessfully searching following for conversion: #{page[0,1000]}"
+      log "Unessuccessfully searching following for conversion: #{page[0,1000]}"
     end
     
     encoding = @site.encoding if encoding.blank?
     encoding = @some_previously_used_encoding if encoding.blank?
     
     if (not encoding.blank?) and encoding.downcase == "utf-8"
-      puts "  => Content is UTF-8"
+      log "  => Content is UTF-8"
       return page
     end
     
@@ -74,9 +81,9 @@ class Scanner
       # if nobody set encoding to nil, we have the converter!
       @some_previously_used_encoding ||= encoding
       page = @converters[encoding].convert page
-      puts "  => Content converted from #{encoding} to utf-8"
+      log "  => Content converted from #{encoding} to utf-8"
     else
-      puts "  \033[35m=> Cannot figure out encoding!\033[0m"
+      log "  \033[35m=> Cannot figure out encoding!\033[0m"
     end
     page
   end
@@ -99,12 +106,12 @@ class Scanner
     # flush now to increase possibility that multiple threads log it together
     # later we will make separate log files
     STDOUT.flush
-    puts "=> processing #{scan.url}"
+    log "=> processing #{scan.url}"
     
     begin
       page = get_page scan.url
     rescue
-      puts "  \033[35m=> Cannot find page #{scan.url}\033[0m"
+      log "  \033[35m=> Cannot find page #{scan.url}\033[0m"
       scan.scanning_error = convert_to_utf($!)
       scan.last_visited = Time.now
       scan.save!
@@ -128,22 +135,22 @@ class Scanner
         next
       end
       # or now, search all links on the site
-      # puts "    => found link to #{new_url}"
+      # log "    => found link to #{new_url}"
       if should_process_page new_url
-        # puts "    => should be added, if already there #{new_url}"
+        # log "    => should be added, if already there #{new_url}"
         count += 1
         s1 = @site.scans.find_or_create_by url: new_url do |s|
           s.last_visited = nil
           s.referral = scan.url
           actual += 1
-          # puts "    => added #{new_url}"
+          # log "    => added #{new_url}"
         end
       end
     end
     
     scan.last_visited = Time.now
     scan.save!
-    puts "  => queued #{all_links.count}/#{count}/#{actual} new urls for later"
+    log "  => queued #{all_links.count}/#{count}/#{actual} new urls for later"
   end
   
   def filter url
@@ -162,7 +169,7 @@ class Scanner
       @site.reload
       
       if @site.ticket_no != ticket_no
-        puts "Somebody changed the ticket, this job is quitting"
+        log "Somebody changed the ticket, this job is quitting"
         break
       end
 
@@ -174,7 +181,7 @@ class Scanner
       
       if @site.should_sleep
         if @site.status_sym != :asleep
-          puts "scanner for #{@site.name} going to sleep"
+          log "scanner for #{@site.name} going to sleep"
           @site.status = :asleep
           @site.save!
         end
@@ -188,7 +195,7 @@ class Scanner
       next_scan = @site.scans.find_by(last_visited: nil)
       
       if next_scan.nil?
-        puts "Completed scanning"
+        log "Completed scanning"
         @site.status = :off
         @site.mode = :off
         @site.save!
@@ -200,6 +207,6 @@ class Scanner
     @site.status = :off
     @site.mode = :off
     @site.save!
-    puts "Completed scanning task for #{@site.name}"
+    log "Completed scanning task for #{@site.name}"
   end
 end
