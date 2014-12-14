@@ -207,10 +207,9 @@ class Harvester
     return true if @@site_name.blank?
     
     if scan.class == String
-      puts "String arrived"
-      scan = Site.find_by(name: @@site_name).scans.initialize do |s|
+      scan = Site.find_by(name: @@site_name).scans.new do |s|
         s.last_visited = nil
-        s.referral = scan.url
+        s.url = scan
       end
     end
     

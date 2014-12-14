@@ -1,7 +1,5 @@
 require 'rest_client'
 
-STDOUT.sync = true
-
 class Scanner
   include Sidekiq::Worker
   sidekiq_options :queue => SidekiqCtrl.defaultQueue
@@ -86,21 +84,21 @@ class Scanner
   def should_process_page url
     #for now, check that it is on our site
     if /^http/.match url
-      if /^https?\:\/\/#{@site.name}/.match url
-        true
-      else
-        false
+      unless /^https?\:\/\/#{@site.name}/.match url
+        return false
       end
     elsif /^mailto\:/.match url
-      false
+      return false
     elsif /^javascript\:/.match url
-      false
-    else
-      true
+      return false
     end
+    filter url
   end
   
   def process_url(scan)
+    # flush now to increase possibility that multiple threads log it together
+    # later we will make separate log files
+    STDOUT.flush
     puts "=> processing #{scan.url}"
     
     begin
@@ -148,8 +146,18 @@ class Scanner
     puts "  => queued #{all_links.count}/#{count}/#{actual} new urls for later"
   end
   
+  def filter url
+    if @site.harvester.class == Harvester
+      true # there is no harvester - get the whole site
+    else
+      @site.harvester.filter_url url, filter_for: :crowling
+    end
+  end
+      
+  
   def perform(host, ticket_no)
     @site = Site.find_by(name: host)
+    @harvester = @site.harvester
     loop do
       @site.reload
       

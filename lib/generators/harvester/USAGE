@@ -1,0 +1,8 @@
+Description:
+    Creates a new harvester sceleton for given website.
+
+Example:
+    rails generate harvester www.website.com
+
+    This will create:
+        /lib/crops/www_website_com.rb
