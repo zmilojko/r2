@@ -1,4 +1,5 @@
 /*
+*= require default.css
 *= require_self
 */
 @import "bootstrap-sprockets";
@@ -44,4 +45,13 @@ input.ng-dirty {
       background-color: $table-bg-accent;
     }
   }
+}
+
+.break-words {
+  word-wrap: break-word;
+  max-width: 30%;
+}
+
+#definition_wrap {
+  overflow: auto;
 }

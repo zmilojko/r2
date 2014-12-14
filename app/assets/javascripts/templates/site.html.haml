@@ -29,6 +29,8 @@
           %a(data-toggle="tab" ng-click="tab = 'harvest'") Harvest
         %li(ng-class="tab == 'settings' ? 'active' : ''")
           %a(data-toggle="tab" ng-click="tab = 'settings'") Settings
+        %li(ng-class="tab == 'definition' ? 'active' : ''")
+          %a(data-toggle="tab" ng-click="tab = 'definition'") Definition
       #my-tab-content.tab-content
         #seeds.tab-pane(ng-class="tab == 'seeds' ? 'active' : ''")
           %table.table
@@ -58,45 +60,37 @@
               %td {{s.url}}
               %td {{s.seed ? "(seed)" : ""}}
         #harvest.tab-pane(ng-class="tab == 'harvest' ? 'active' : ''")
-        #harvest.tab-pane(ng-class="tab == 'settings' ? 'settings' : ''")
-
-    
--#
-      %form(role="form" name="form")
-        .form-group(ng-if="site_name == 'new'")
-          %label Site name
-          %input#edit-site-name.form-control(type="text" placeholder="New site name: ggg.example.com" ng-model="site.name")
-        .checkbox
-          %label
-            %input(type="checkbox") Use SSL (https://...)
-        .form-group
-          %label Expected encoding
-          %input.form-control(type="text" placeholder="For example: UTF-8"model="site.encoding")
-        .form-group
-          %label Scanning time (leave empty for always)
+          %p(ng-if="seeds_and_scans.crops.length == 0") Nothing harvested yet.
+          %table.table.table-condensed
+            %tr
+              %th(ng-repeat="f in seeds_and_scans.crop_fields") {{f}}
+            %tr(ng-repeat="s in seeds_and_scans.crops")
+              %td(ng-repeat="f in seeds_and_scans.crop_fields") 
+                %span(ng-if="f.indexOf('url') == -1") {{s[f]}}
+                %a.break-words(ng-if="f.indexOf('url') > -1" href="{{s[f]}}") {{makeSpecious(s[f])}}
+        #harvest.tab-pane(ng-class="tab == 'settings' ? 'active' : ''")
           .row
-            .col-sm-4
-              %input.form-control(type="text" placeholder="21 for 9pm" ng-model="site.start_time")
-            .col-sm-4
-              %input.form-control(type="text" placeholder="6 for 6am" ng-model="site.end_time")
-        .form-group(ng-repeat="rule in site.rules")
-          %label(ng-if="$index == 0") Rules
-          .input-group
-            %input.form-control(type="text" placeholder="Input new rule regex" ng-model="rule.regex" )
-            %span.input-group-addon(ng-click="removeRule(rule)")
-              %span.glyphicon.glyphicon-remove
-          .checkbox
-            %label
-              %input(type="checkbox") Positive
-        .form-group
-          %button.btn.btn-default(ng-disabled="!!site.rules.length && site.rules[site.rules.length - 1].regex == ''" ng-click="addRule(rule)") Add new rule
-        .form-group
-          %button.btn.btn-default(ng-click="save()") Save
-          %button.btn.btn-default(ng-click="cancel()") Back to site list
-          %button.btn.btn-default(confirmed-click="deleteSite()" ng-confirm-click="Are you absolutelly sure you want to delete a site and all its scans?") Delete this site!
-    .col-sm-6
-      .form-group
-        %input.form-control(type="text" placeholder="Enter new seed url, example: /location" ng-model="new_seed.url" )
-      .form-group
-        %button.btn.btn-default(ng-click="addNewSeed()") New Seed
+            .col-md-6
+              %form(role="form" name="form")
+                .checkbox
+                  %label
+                    %input(type="checkbox") Use SSL (https://...)
+                .form-group
+                  %label Expected encoding
+                  %input.form-control(type="text" placeholder="For example: UTF-8"model="site.encoding")
+                .form-group
+                  %label Scanning time (leave empty for always)
+                  .row
+                    .col-sm-4
+                      %input.form-control(type="text" placeholder="21 for 9pm" ng-model="site.start_time")
+                    .col-sm-4
+                      %input.form-control(type="text" placeholder="6 for 6am" ng-model="site.end_time")
+                .form-group
+                  %button.btn.btn-default(ng-click="save()") Save
+                  %button.btn.btn-default(confirmed-click="deleteSite()" ng-confirm-click="Are you absolutelly sure you want to delete a site and all its scans?") Delete this site!
 
+            .col-md-6
+        #definition.tab-pane(ng-class="tab == 'definition' ? 'active' : ''")
+          .row
+            .col-xs-12
+              %div(hljs style="margin-top: 20px" source="seeds_and_scans.definition || 'Loading definition...'")

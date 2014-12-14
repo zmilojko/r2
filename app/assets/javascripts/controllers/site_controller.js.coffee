@@ -38,4 +38,6 @@
       siteService.addSeed($scope.new_seed)
       .then ->
         $scope.new_seed.url = ""
+    $scope.makeSpecious = (s) ->
+      s.replace /\//g, "/ "
 ]

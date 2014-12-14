@@ -4,6 +4,8 @@ class Scan
   field :content, type: String
   field :last_visited, type: Time, default: nil
   field :seed, type: Mongoid::Boolean, default: false
+  field :referral
+  field :scanning_error
   belongs_to :site
   
   def never_visited

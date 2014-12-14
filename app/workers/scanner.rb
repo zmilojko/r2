@@ -6,7 +6,7 @@ class Scanner
   
   def initialize
     @cookies = nil
-    @converters = nil
+    @converters = {}
     @some_previously_used_encoding = nil
   end
   
@@ -29,18 +29,36 @@ class Scanner
   end
   
   def convert_to_utf page
-    doc = Nokogiri::HTML(page)
-    encoding = nil
-    doc.xpath('//meta').each do |meta_tag|
-      begin
-        content_attr = meta_tag.attributes['content'].value
-        encoding = content_attr[/charset=([\w\-]+)/,1]
-      rescue
+    encoding = ""
+    page = page.to_s
+    begin
+      doc = Nokogiri::HTML(page)
+      doc.xpath('//meta').each do |meta_tag|
+        begin
+          # <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1"/>
+          content_attr = meta_tag.attributes['content'].value
+          encoding = content_attr[/charset=([\w\-]+)/,1]
+          break unless encoding.blank?
+        rescue
+        end
+        begin
+          # <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1"/>
+          encoding = meta_tag.attributes['charset'].value
+          break unless encoding.blank?
+        rescue
+        end
       end
+    rescue
+      puts "Unessuccessfully searching following for conversion: #{page[0,1000]}"
     end
     
-    encoding ||= @site.encoding
-    encoding ||= @some_previously_used_encoding
+    encoding = @site.encoding if encoding.blank?
+    encoding = @some_previously_used_encoding if encoding.blank?
+    
+    if encoding.downcase == "utf-8"
+      puts "  => Content is UTF-8"
+      return page
+    end
     
     unless encoding.blank?
       # now we have the best guess for encoding, but that still be illegal
@@ -56,6 +74,9 @@ class Scanner
       # if nobody set encoding to nil, we have the converter!
       @some_previously_used_encoding ||= encoding
       page = @converters[encoding].convert page
+      puts "  => Content converted from #{encoding} to utf-8"
+    else
+      puts "  \033[35m=> Cannot figure out encoding!\033[0m"
     end
     page
   end
@@ -63,7 +84,7 @@ class Scanner
   def should_process_page url
     #for now, check that it is on our site
     if /^http/.match url
-      if /^http\:\/\/#{@site.name}/.match url
+      if /^https?\:\/\/#{@site.name}/.match url
         true
       else
         false
@@ -84,7 +105,7 @@ class Scanner
       page = get_page scan.url
     rescue
       puts "  \033[35m=> Cannot find page #{scan.url}\033[0m"
-      scan.content = $!
+      scan.scanning_error = convert_to_utf($!)
       scan.last_visited = Time.now
       scan.save!
       return
@@ -113,6 +134,7 @@ class Scanner
         count += 1
         s1 = @site.scans.find_or_create_by url: new_url do |s|
           s.last_visited = nil
+          s.referral = scan.url
           actual += 1
           # puts "    => added #{new_url}"
         end

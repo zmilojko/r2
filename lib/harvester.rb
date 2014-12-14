@@ -15,6 +15,16 @@ class Harvester
     @@filters
   end
   
+  def self.loaded
+    ObjectSpace.each_object(Class).select { |klass| klass < self }
+  end
+  
+  def self.find name
+    res = loaded.select { |klass| klass.to_s == name }
+    raise "No such harvester #{name}" unless res.count == 1
+    res[0]
+  end
+
   def self.filter only_for: :always, regex: nil, rule: :allow, &block
     if block
       raise "cannot have both regex and block in same filter" if regex
@@ -41,6 +51,10 @@ class Harvester
       }
   end
   
+  def self.filter_url url, filter_for: :anything
+    do_filter url, filter_for: filter_for
+  end
+  
   def self.perform_harvest name: nil
     raise "you should define site name before trying harvesting." unless @@site_name
     name ||= @@site_name
@@ -48,7 +62,7 @@ class Harvester
     raise "nothing to harvest. Define a harvest before performing it." unless current_harvest
     results_count = 0
     
-    site = Site[@@site_name]
+    site = Site.find_by name: @@site_name
     sort = nil # sort is remembered, but is not currently used
                # it will be used later, when these definitions become
                # part of the Site object. Sort will be used when querying
@@ -189,6 +203,17 @@ class Harvester
   end
   
   def self.do_filter scan, filter_for: :anything
+    
+    return true if @@site_name.blank?
+    
+    if scan.class == String
+      puts "String arrived"
+      scan = Site.find_by(name: @@site_name).scans.initialize do |s|
+        s.last_visited = nil
+        s.referral = scan.url
+      end
+    end
+    
     @@filters.each do |f|
       if filter_for == :anything or 
           f[:only_for].include? :always or

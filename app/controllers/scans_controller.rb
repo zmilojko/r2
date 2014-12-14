@@ -28,7 +28,16 @@ class ScansController < ApplicationController
     end
     respond_to do |format|
       format.json do
-        render json: @site.scan_report
+        begin
+          render json: @site.scan_report
+        rescue
+          puts "ERROR #{$!}"
+          @site.mode = :off
+          @site.scan_report[:latest_scans].each do |scan|
+            puts "        URL: #{scan["url"]}"
+          end
+          render json: { conversion_error: "ERROR! #{$!}" }
+        end
       end
     end
   end

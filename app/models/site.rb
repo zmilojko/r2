@@ -1,6 +1,9 @@
+load 'harvester.rb'
+
 class Site
   include Mongoid::Document
   field :name, type: String
+  field :code, type: String, default: nil
   field :default_ssl, type: Mongoid::Boolean, default: false
   field :mode, type: String, default: :off
   field :status, type: String, default: :off
@@ -12,11 +15,7 @@ class Site
   embeds_many :rules
   has_many :scans
   has_many :crops
-  
-  def self.[] url
-    self.find_by name: url.to_s
-  end
-  
+
   # modes: :off, :on (runs by schedule), :forced
   def mode_sym
     (mode || :off).to_sym
@@ -101,14 +100,40 @@ class Site
     save
   end
   
-  def scan_report limit: 10
+  def scan_report limit: 200
     results = {
       seeds: scans.where(seed: true).limit(limit).as_json,
       latest_scans: scans.where(:last_visited.ne => nil).order(last_visited: :desc).limit(limit).as_json,
 #      latest_scans: scans.where('$or: [{"last_visited": {$exists: false}},{"last_visited":null}]').order(last_visited: :desc).limit(limit),
-      next_scans: scans.where(last_visited: nil).limit(limit).as_json
+      next_scans: scans.where(last_visited: nil).limit(limit).as_json,
+      crops: crops.all.as_json,
+      definition: definition
     }
-    puts results
     results
+  end
+  
+  def real_code_file_name
+    code || name.gsub(/[\W_]+/,"_")
+  end
+  def real_code_class_name
+    real_code_file_name.camelize
+  end
+  
+  def harvester
+    if File.exist? harvester_file_name = Rails.root.join("lib", "crops","#{real_code_file_name}.rb")
+      load harvester_file_name
+      Harvester.find real_code_class_name
+    else
+      load Rails.root.join("lib", "harvester.rb")
+      Harvester
+    end
+  end
+  
+  def definition
+    begin
+      File.read Rails.root.join("lib", "crops","#{real_code_file_name}.rb") 
+    rescue
+      ""
+    end
   end
 end

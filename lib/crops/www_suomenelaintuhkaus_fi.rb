@@ -2,7 +2,7 @@
 
 load 'harvester.rb'
 
-# reload! ; x = "www.suomenelaintuhkaus.fi" ; load "crops/#{x}.rb" ; Site[x].crops.delete_all ; k = Vet.perform_harvest ; g = Site[x].crops ; k
+# reload! ; s = Site.find_by name: "www.suomenelaintuhkaus.fi" ;  s.crops.delete_all ; k = s.harvester.perform_harvest ; g = s.crops ; k
 
 
 class WwwSuomenelaintuhkausFi < Harvester

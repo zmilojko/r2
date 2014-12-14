@@ -14,7 +14,10 @@ Site = $resource('/sites/:siteId', {siteId:'@id'},
         @current_site_scans = 
           seeds: [],
           latest_scans: [],
-          next_scans: []
+          next_scans: [],
+          crops: [],
+          crop_fields: [],
+          definition: ""
         @pinging = false
         service
       get_sites: ->
@@ -32,7 +35,10 @@ Site = $resource('/sites/:siteId', {siteId:'@id'},
           @current_site_scans = 
             seeds: [],
             latest_scans: [],
-            next_scans: []
+            next_scans: [],
+            crops: [],
+            crop_fields: [],
+            definition: ""
           if current_site
             service.doGetScans(current_site)
             .then (scans) ->
@@ -46,10 +52,26 @@ Site = $resource('/sites/:siteId', {siteId:'@id'},
         .then (server_response) ->
           service.current_site_scans.seeds.length = 0
           Array.prototype.push.apply(service.current_site_scans.seeds, server_response.data.seeds)
+          
           service.current_site_scans.latest_scans.length = 0
           Array.prototype.push.apply(service.current_site_scans.latest_scans, server_response.data.latest_scans)
+          
           service.current_site_scans.next_scans.length = 0
           Array.prototype.push.apply(service.current_site_scans.next_scans, server_response.data.next_scans)
+          
+          service.current_site_scans.crops.length = 0
+          service.current_site_scans.crop_fields.length = 0
+          Array.prototype.push.apply(service.current_site_scans.crops, server_response.data.crops)
+          for crop in service.current_site_scans.crops
+            crop.fields = Object.keys(crop)
+            if (index = crop.fields.indexOf('site_id')) > -1
+              crop.fields.splice(index,1)
+            if (index = crop.fields.indexOf('_id')) > -1
+              crop.fields.splice(index,1)
+            for field in crop.fields when service.current_site_scans.crop_fields.indexOf(field) == -1 and crop[field]
+              service.current_site_scans.crop_fields.push field
+          
+          service.current_site_scans.definition = server_response.data.definition
           service.current_site_scans
       keepPingingScans: (current_site) ->
         $timeout ->
