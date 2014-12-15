@@ -52,6 +52,7 @@ class Harvester
   end
   
   def self.filter_url url, filter_for: :anything
+    puts "filter url I am #{self}"
     do_filter url, filter_for: filter_for
   end
   
