@@ -7,11 +7,8 @@ class KauppaOuluvetFi < Harvester
   site "kauppa.ouluvet.fi"
 
   filter only_for: :always do
-    puts "filtering here"
-    result = (url[/index\.php\?main_page\=index/] or
-      url[/index\.php\?main_page\=product_info/])
-    puts "Testing vet url #{url}, result #{result}"
-    result
+    url[/index\.php\?main_page\=index/] or
+      url[/index\.php\?main_page\=product_info/]
   end
   
   harvest do

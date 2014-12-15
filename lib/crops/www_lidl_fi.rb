@@ -7,9 +7,7 @@ class WwwLidlFi < Harvester
   site "www.lidl.fi"
 
   filter only_for: :always do
-    result = url.include? "/fi/tarjoukset.htm"
-    puts "Testing lidl url #{url}, result #{result}"
-    result
+    url.include? "/fi/tarjoukset.htm"
   end
   
   harvest do
