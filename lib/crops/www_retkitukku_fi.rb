@@ -7,12 +7,19 @@ class WwwRetkitukkuFi < Harvester
   site "www.retkitukku.fi"
 
   filter only_for: :always do
+    result = true
     %w(index.php catalog checkout control contacts customer customize 
     newsletter poll review sendfriend tag wishlist cron.php cron.sh error
-    install license media).each {|w|return false if url[Regexp.new(w,"i")]}
-    return false if url.downcase.include? "#"
-    return false if url.downcase.include? "?"
-    true
+    install license media).each do |w| 
+      if url[Regexp.new(w,"i")]
+        result = false
+        break
+      end
+    end
+    result = false if url.downcase.include? "#"
+    result = false if url.downcase.include? "?"
+    puts "Testing retki url #{url}, result #{result}"
+    result
   end
   
   harvest do
