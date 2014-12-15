@@ -9,27 +9,29 @@ class WwwHmCom < Harvester
   filter only_for: :always do
     u = url.downcase
     
-    result = true
-    %w(index.php checkout control contacts customer customize 
+    result = referral.downcase.include? "subdepartment/sale"
+    %w(pra1 goes_with_pd similar_to_sd index.php checkout 
+    control contacts customer customize 
     newsletter review sendfriend wishlist error
     install license media webapp order logon userreg 
-    inspiration).each do |w| 
+    inspiration ).each do |w| 
       if u.include? w
         result = false
       end
+      break unless result
     end
-    result ||= referral.downcase.include? "department/sale"
     if result
       if u.include? "product"
         result = { replace_url: url.gsub(/\?.*/,"") }
       else
-        result = u.include? "department/sale"
+        if u[/\?page=\d+/]
+          result = { replace_url: referral + url }
+        else
+          result = false
+        end
       end
     end
-    if result
-      result = false if url.include?("PRA1#") or url.include?("GOES_WITH_PD#")
-    end
-
+    # puts "verdict for HM #{url} is #{result}"
     result
   end
   

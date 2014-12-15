@@ -11,15 +11,24 @@ class WwwEllosFi < Harvester
     %w(index.php catalog checkout control contacts customer customize 
     newsletter poll review sendfriend tag wishlist cron.php cron.sh error
     install license media webapp order logon userreg kaupat ohjeet www 
-    inspiration).each do |w| 
-      if url[Regexp.new(w,"i")]
+    inspiration javascript).each do |w| 
+      if url.downcase.include? w
         result = false
         break
       end
     end
-    result = false if url.downcase.include? "#"
-    result = false if url.downcase.include? "?"
-    result = false if url.downcase.include? "."
+    if result 
+      if url[/\/ale\?nao\=\d+/i]
+        result = true
+      else
+        if (not url.downcase.include? 'ale') and (not url.downcase.include? 'selArt')
+          result = { replace_url: url.gsub(/\?.*/,"") }
+        else
+          result = false
+        end
+      end
+    end    
+    # puts "verdict for #{url} is #{result}"
     result
   end
   
@@ -36,3 +45,5 @@ class WwwEllosFi < Harvester
     # end
   end
 end
+
+#http://www.ellos.fi/ellos-sport/urheiluliivit-teknista-materiaalia/415784?N=1z13t3o&Ns=RankValue4|1&Nao=50&selArt=170211
