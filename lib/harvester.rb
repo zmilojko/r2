@@ -220,12 +220,24 @@ class Harvester
           f[:only_for].include? :always or
           f[:only_for].include? filter_for
         begin
-          return f[:rule] == :allow if scan.instance_exec &f[:block]
+          result = scan.instance_exec &f[:block]
+          if not result.blank?
+            # it yielded truthy, make a verdict
+            if f[:rule] == :allow
+              if result.is_a? Hash
+                return result
+              else
+                return true
+              end
+            else
+              return false
+            end
+          end
         rescue
         end
       end
     end
-    false
+    return false
   end
 end
 
