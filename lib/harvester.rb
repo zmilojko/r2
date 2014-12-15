@@ -53,8 +53,8 @@ class Harvester
       }
   end
   
-  def self.filter_url url, filter_for: :anything
-    do_filter url, filter_for: filter_for
+  def self.filter_url url, filter_for: :anything, referral: nil
+    do_filter url, filter_for: filter_for, referral
   end
   
   def self.perform_harvest name: nil
@@ -204,12 +204,13 @@ class Harvester
     end
   end
   
-  def self.do_filter scan, filter_for: :anything
+  def self.do_filter scan, filter_for: :anything, referral: nil
     return true if @site_name.blank?
     
     if scan.class == String
       scan = Site.find_by(name: @site_name).scans.new do |s|
         s.last_visited = nil
+        s.referral = referral
         s.url = scan
       end
     end

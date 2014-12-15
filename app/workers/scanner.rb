@@ -88,7 +88,7 @@ class Scanner
     page
   end
 
-  def should_process_page url
+  def should_process_page url, referral
     #for now, check that it is on our site
     if /^http/.match url
       unless /^https?\:\/\/#{@site.name}/.match url
@@ -99,7 +99,7 @@ class Scanner
     elsif /^javascript\:/.match url
       return false
     end
-    filter url
+    filter url: url, referral: referral
   end
   
   def process_url(scan)
@@ -136,7 +136,7 @@ class Scanner
       end
       # or now, search all links on the site
       # log "    => found link to #{new_url}"
-      if should_process_page new_url
+      if should_process_page new_url, scan.url
         # log "    => should be added, if already there #{new_url}"
         count += 1
         s1 = @site.scans.find_or_create_by url: new_url do |s|
@@ -153,11 +153,12 @@ class Scanner
     log "  => queued #{all_links.count}/#{count}/#{actual} new urls for later"
   end
   
-  def filter url
+  def filter url: nil, referral: nil
+    raise "must pass both url and referral" unless url and referral
     if @site.harvester.class == Harvester
       true # there is no harvester - get the whole site
     else
-      @site.harvester.filter_url url, filter_for: :crowling
+      @site.harvester.filter_url url, filter_for: :crowling, referral: referral
     end
   end
       
