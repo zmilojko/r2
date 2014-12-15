@@ -3,16 +3,17 @@
 require 'harvester_parser'
 
 class Harvester
-  @@site_name = nil
-  @@filters = []
-  @@crops = []
+  @site_name = nil
   
   def self.site site_name
-    @@site_name = site_name
+    raise "You cannot call the 'site' method twice" if @filters or @crops
+    @site_name = site_name
+    @filters = []
+    @crops = []
   end
 
   def self.filters
-    @@filters
+    @filters
   end
   
   def self.loaded
@@ -26,13 +27,14 @@ class Harvester
   end
 
   def self.filter only_for: :always, regex: nil, rule: :allow, &block
+    raise "You cannot define a filter before you define the site" unless @site_name
     if block
       raise "cannot have both regex and block in same filter" if regex
       filter_proc = block
     else
       filter_proc = Proc.new { url.match regex }
     end
-    @@filters << { 
+    @filters << { 
       only_for: [only_for].flatten,
       rule: rule, # it can also be deny, and such must be defined before allow
       block: filter_proc
@@ -40,11 +42,11 @@ class Harvester
   end
   
   def self.harvest name: nil, &block
-    raise "you should define site name before defining a harvest" unless @@site_name
+    raise "you should define site name before defining a harvest" unless @site_name
     processor = FindProcessor.new block: block
     processor.execute
-    @@crops << {
-        name: name || @@site_name,
+    @crops << {
+        name: name || @site_name,
         block: block,
         finds: processor.finds(),
         scrapers: processor.scrapers
@@ -52,18 +54,17 @@ class Harvester
   end
   
   def self.filter_url url, filter_for: :anything
-    puts "filter url I am #{self}"
     do_filter url, filter_for: filter_for
   end
   
   def self.perform_harvest name: nil
-    raise "you should define site name before trying harvesting." unless @@site_name
-    name ||= @@site_name
-    current_harvest = @@crops[@@crops.index{|x| x[:name] == name}]
+    raise "you should define site name before trying harvesting." unless @site_name
+    name ||= @site_name
+    current_harvest = @crops[@crops.index{|x| x[:name] == name}]
     raise "nothing to harvest. Define a harvest before performing it." unless current_harvest
     results_count = 0
     
-    site = Site.find_by name: @@site_name
+    site = Site.find_by name: @site_name
     sort = nil # sort is remembered, but is not currently used
                # it will be used later, when these definitions become
                # part of the Site object. Sort will be used when querying
@@ -204,17 +205,16 @@ class Harvester
   end
   
   def self.do_filter scan, filter_for: :anything
-    
-    return true if @@site_name.blank?
+    return true if @site_name.blank?
     
     if scan.class == String
-      scan = Site.find_by(name: @@site_name).scans.new do |s|
+      scan = Site.find_by(name: @site_name).scans.new do |s|
         s.last_visited = nil
         s.url = scan
       end
     end
-    
-    @@filters.each do |f|
+
+    @filters.each do |f|
       if filter_for == :anything or 
           f[:only_for].include? :always or
           f[:only_for].include? filter_for
@@ -227,3 +227,5 @@ class Harvester
     false
   end
 end
+
+Dir[Rails.root.join("lib", "crops", "*.rb")].each {|file| require file }

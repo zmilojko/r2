@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-load 'harvester.rb'
+require 'harvester'
 
 # reload! ; s = Site.find_by name: "kauppa.ouluvet.fi" ;  s.crops.delete_all ; k = s.harvester.perform_harvest ; g = s.crops ; k
 

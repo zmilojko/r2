@@ -1,4 +1,4 @@
-load 'harvester.rb'
+require 'harvester'
 
 class Site
   include Mongoid::Document
@@ -120,11 +120,9 @@ class Site
   end
   
   def harvester
-    if File.exist? harvester_file_name = Rails.root.join("lib", "crops","#{real_code_file_name}.rb")
-      load harvester_file_name
+    if File.exist? Rails.root.join("lib", "crops","#{real_code_file_name}.rb")
       Harvester.find real_code_class_name
     else
-      load Rails.root.join("lib", "harvester.rb")
       Harvester
     end
   end
