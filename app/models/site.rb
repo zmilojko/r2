@@ -120,10 +120,11 @@ class Site
   end
   
   def harvester
+    return @harvester if @harvester
     if File.exist? Rails.root.join("lib", "crops","#{real_code_file_name}.rb")
-      Harvester.find real_code_class_name
+      @harvester = Harvester.find real_code_class_name
     else
-      Harvester
+      @harvester = Harvester
     end
   end
   
