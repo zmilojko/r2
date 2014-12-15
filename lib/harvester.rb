@@ -54,7 +54,7 @@ class Harvester
   end
   
   def self.filter_url url, filter_for: :anything, referral: nil
-    do_filter url, filter_for: filter_for, referral
+    do_filter url, filter_for: filter_for, referral: referral
   end
   
   def self.perform_harvest name: nil
