@@ -24,7 +24,9 @@ class WwwRetkitukkuFi < Harvester
   harvest do
     find css: 'div.MagicToolboxContainer a.MagicZoomPlus', as: :pic_1
     find css: '.product-name h1', as: :h1_name
-    find css: 'div.price-box span.price', as: :price_tag
+    find xpath: '//span[starts-with(@id, "product-price-") and not(string-length(@id) > 20)]', as: :price_tag
+    # find xpath: '//span[starts-with(@id, "product-price-") and not(contains(@id, "clone")) and not(contains(@id, "related")) and not(contains(@id, "upsell"))]', as: :price_tag
+    # find css: 'div.price-box span.price', as: :price_tag
     
     # c = s.scans.find_by url: "http://www.retkitukku.fi/alaska-mount-hunter-pro-untuvatakki.html"
     # c.html.css( "div.MagicToolboxContainer  a.MagicZoomPlus").href

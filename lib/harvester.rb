@@ -111,7 +111,8 @@ class Harvester
     raise "no argument can be nil" unless harvest and name and node and scan
     results = []
     harvest[:finds].select{|f| f[:from] == name}.each do |f|
-      found_nodes = node.css f[:css]
+      found_nodes = node.css f[:css] if f[:css]
+      found_nodes = node.xpath f[:xpath] if f[:xpath]
       found_nodes.each do |found_node|
         duts "  #{'  ' * depth}=> found #{f[:as]}: #{found_node.to_s[0,60 - depth * 2]}"
         found_nodes_hash[f[:as]] = found_node
@@ -236,14 +237,18 @@ class Harvester
       @scrapers = []
     end
     
-    def find css: nil, as: nil
-      unless as
-        as = css[/\w+/] if css
+    def find css: nil, xpath: nil, as: nil
+      if as.blank? and not css.blank?
+        as = css[/\w+/]
+      end
+      if as.blank? and not xpath.blank?
+        as = xpath[/\w+/]
       end
       raise "You need to specify 'as' if it cannot be deducted from somewhere." unless as
       finds << {
           from: @current_element_node,
           css: css,
+          xpath: xpath,
           as: as
         }
       if block_given?
