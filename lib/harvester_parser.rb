@@ -14,7 +14,11 @@ module Scraper
     begin
       css('a')[0]['href']
     rescue
-      nil
+      begin
+        attribute('href').value
+      rescue
+        nil
+      end
     end
   end
 end
