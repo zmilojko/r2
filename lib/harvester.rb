@@ -63,6 +63,38 @@ class Harvester
       }
   end
   
+  def self.index index_name, name: nil, &block
+    raise "you should define site name before defining an index." unless @site_name
+    name ||= @site_name
+    my_crop = @crops.select {|x| x[:name] == name}
+    raise "You must define harvest before an index" unless my_crop.count == 1
+    raise "You must define the 'as' attribute for an index" if index_name.blank?
+    my_crop.first[:index] = {
+      name: name,
+      class_name: :index_name,
+      block: block
+    }
+  end
+  
+  def self.perform_seeding name: nil
+    raise "you should define site name before trying indexing." unless @site_name
+    site = Site.find_by name: @site_name
+    
+    name ||= @site_name
+    my_crop = @crops.select {|x| x[:name] == name}
+    raise "You must define harvest before an index" unless my_crop.count == 1
+    
+    index = my_crop.first[:index]
+    raise "Index not define when trying to perform indexing" unless index
+    
+    File.open (filename = Rails.root.join('log', "#{site.real_code_file_name}.seed.rb")), "w" do |file|
+      site.crops.all.each_with_index do |crop, counter|
+        file.write Indexer.new(crop, index, counter).creation
+      end
+    end
+    filename.to_s
+  end
+  
   def self.filter_url url, filter_for: :anything, referral: nil
     do_filter url, filter_for: filter_for, referral: referral
   end
@@ -270,6 +302,42 @@ class Harvester
     
     def execute
       self.instance_exec &@block
+    end
+  end
+  
+  class Indexer
+    attr_reader :counter
+    attr_reader :creation
+    
+    def initialize crop, index, counter_value
+      @crop = crop
+      @index = index
+      @counter = counter_value
+      @creation = ""
+      
+      self.instance_exec &index[:block]
+      # remove trailing comma
+      @creation << "\n\n"
+    end
+    
+    def method_missing(name, *args, &block)
+      value = nil
+      if args.blank?
+        value = @crop.send(name)
+      elsif args[0].is_a? Symbol
+        value = @crop.send(args[0])
+      else
+        value = args[0]
+      end
+      
+      value = value.to_s
+      value.gsub! "\"", "\\\""
+      
+      if @creation.blank?
+        @creation = %(#{@index[:class_name]}.create! #{name}: "#{value}")
+      else
+        @creation << %(,\n#{ ' ' * (@index[:class_name].length + 9)   }#{name}: "#{value}")
+      end
     end
   end
   

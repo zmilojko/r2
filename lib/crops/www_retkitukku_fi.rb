@@ -38,4 +38,13 @@ class WwwRetkitukkuFi < Harvester
       price price_tag.text
     end
   end
+  
+  
+  index :product do
+    pid counter
+    name
+    url :origin_url
+    image_id :image_url
+    shop 'retkitukku'
+  end
 end
