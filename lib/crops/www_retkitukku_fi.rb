@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 require 'harvester'
 
-# reload! ; s = Site.find_by name: "www.retkitukku.fi" ;  s.crops.delete_all ; k = s.harvester.perform_harvest ; g = s.crops ; k
+# reload! ; require 'harvester' ; Harvester.set_debug true ; s = Site.find_by name: "www.retkitukku.fi" ;  s.crops.delete_all ; k = s.harvester.perform_harvest ; g = s.crops ; k
 
 class WwwRetkitukkuFi < Harvester
   site "www.retkitukku.fi"
@@ -22,15 +22,18 @@ class WwwRetkitukkuFi < Harvester
   end
   
   harvest do
-    # find css: 'td.content_table' do
-    #   find css: 'p'
-    # end
-
-    # scrape :p do
-    #   city td.css('h1').text, :mandatory
-    #   name p.css_any('a', 'strong').text, :sort
-    #   url p.href
-    #   info p.text
-    # end
+    find css: 'div.MagicToolboxContainer a.MagicZoomPlus', as: :pic_1
+    find css: '.product-name h1', as: :h1_name
+    find css: 'div.price-box span.price', as: :price_tag
+    
+    # c = s.scans.find_by url: "http://www.retkitukku.fi/alaska-mount-hunter-pro-untuvatakki.html"
+    # c.html.css( "div.MagicToolboxContainer  a.MagicZoomPlus").href
+    
+    scrape :price_tag, only: :once do
+      mandatory :h1_name
+      name h1_name.text, :sort
+      image_url pic_1.href
+      price price_tag.text
+    end
   end
 end

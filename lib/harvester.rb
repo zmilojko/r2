@@ -3,6 +3,16 @@
 require 'harvester_parser'
 
 class Harvester
+  @@debug = false
+  def self.set_debug onoff
+    @@debug = onoff
+  end
+  def self.duts x
+    if @@debug
+      puts x
+    end
+  end
+  
   @site_name = nil
   
   def self.site site_name
@@ -72,16 +82,21 @@ class Harvester
                # some data somehow.
     
     site.scans.each do |scan|
+      duts "Harvesting url #{scan.url}"
       if do_filter scan, filter_for: :harvesting
-        new_results = harvest_for harvest: current_harvest, name: 'document', node: scan.html
+        duts "  => OK"
+        new_results = harvest_for harvest: current_harvest, name: 'document', node: scan.html, scan: scan
 
         new_results.select! { |r| r[:object] }
         new_results.map! do |r|
           sort = r[:sort]
-          r[:object]
+          res = {origin_url: r[:origin_url]}
+          res.merge r[:object]
         end
         site.crops.create! new_results
         results_count += new_results.count
+      else
+        duts "  X filtered out"
       end
     end
     results_count
@@ -89,64 +104,112 @@ class Harvester
   
   private
   
-  def self.harvest_for harvest: nil, name: nil, node: nil, found_nodes_hash: {}
-    raise "no argument can be nil" unless harvest and name and node
+  def self.harvest_for harvest: nil, name: nil, node: nil, found_nodes_hash: {}, depth: 0, scan: nil
+    if found_nodes_hash.blank?
+      Scraperer.undefine_node_methods
+    end
+    raise "no argument can be nil" unless harvest and name and node and scan
     results = []
     harvest[:finds].select{|f| f[:from] == name}.each do |f|
       found_nodes = node.css f[:css]
       found_nodes.each do |found_node|
+        duts "  #{'  ' * depth}=> found #{f[:as]}: #{found_node.to_s[0,60 - depth * 2]}"
         found_nodes_hash[f[:as]] = found_node
         #Notice that the last one actually stays defined forever!
-        results.push *(harvest_for harvest: harvest, name: f[:as], node: found_node, found_nodes_hash: found_nodes_hash)
+        results.push *(harvest_for harvest: harvest, name: f[:as], node: found_node, found_nodes_hash: found_nodes_hash, depth: depth + 1, scan: scan)
         found_nodes_hash.each do |name, node|
           Scraperer.define_my_method name, node
         end
-        results.push *scrape_for(harvest: harvest, name: f[:as])
+        results.push *scrape_for(harvest: harvest, name: f[:as], scan: scan)
       end
     end
     results
   end
   
-  def self.scrape_for harvest: nil, name: nil
+  def self.scrape_for harvest: nil, name: nil, scan: nil
     results = []
     raise "no argument can be nil" unless harvest and name
     harvest[:scrapers].select{|s| s[:name].to_sym == name.to_sym}.each do |s|
-      sc = Scraperer.new s
+      # if s.only.include? :once -> then should not use this scaperer for this scan again.
+      # This is actually not so easy to implement, but is doable. After dogs...
+      
+      
+      
+      
+      sc = Scraperer.new s, scan, @@debug
       results << sc.execute
     end
     results
   end
   
   class Scraperer
+    @defined_node_methods = []
     def self.define_my_method name, node
-      define_method name do
-        node
+      unless node_method_defined? name
+        define_method name do
+          node
+        end
+        @defined_node_methods << name.to_sym
       end
     end
-    def initialize scraper
+    def self.undefine_node_methods
+      @defined_node_methods.each do |name| 
+        define_method name do
+          raise "Calling undefined node #{name}. This typically means scraping when not all nodes are found."
+        end
+      end
+      @defined_node_methods = []
+    end
+    
+    def self.node_method_defined? method_symbol
+      @defined_node_methods.include? method_symbol.to_sym
+    end
+    
+    
+    def initialize scraper, scan, debug
       @scaper = scraper
       @is_scraping = false
       @result = {
           sort: [],
-          object: {}
+          object: {},
+          origin_url: scan.url
         }
+      @debug = debug
+      @scan = scan
     end
+    
+    def mandatory node_symbol
+      throw :no_mandatory_node unless self.class.node_method_defined? node_symbol.to_sym
+    end
+    
     def execute
       @is_scraping = true
+      completed = false
       begin
-        self.instance_exec &@scaper[:block]
+        catch :no_mandatory_node  do
+          self.instance_exec &@scaper[:block]
+          completed = true
+          if @debug
+            puts "  => SUCCESSFUL SCRAPING"
+          end
+        end
       rescue
-        @result[:object] = nil
+        puts "WARING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+        puts "Error in #{@scan.url}: #{$!}"
       end
+      @result[:object] = nil unless completed
       @is_scraping = false
       @result
     end
 
     def method_missing(name, *args, &block)
       if @is_scraping
-        raise "scraperer: value not given for method #{name}" if args.length == 0
+        raise "scraperer: value not given for method #{name}. This can also be if scraping is done before all the nodes are found!" if args.length == 0
         value = args[0].to_s
         @result[:object][name.to_sym] = value
+        if @debug
+          puts "  => scraped #{name.to_sym}: #{value[0,60]}"
+        end
         (1..args.length - 1).each do |index|
           case args[index]
           when :mandatory
@@ -191,11 +254,12 @@ class Harvester
       end
     end
     
-    def scrape name, &block
+    def scrape name, only: nil, &block
       raise "you have to define the name of the scrape" unless name
       @scrapers << {
         name: name,
-        block: block
+        block: block,
+        only: [only].flatten
       }
     end
     

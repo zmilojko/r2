@@ -2,7 +2,7 @@
 
 require 'harvester'
 
-# reload! ; s = Site.find_by name: "www.suomenelaintuhkaus.fi" ;  s.crops.delete_all ; k = s.harvester.perform_harvest ; g = s.crops ; k
+# reload! ; require 'harvester' ; Harvester.set_debug true ; s = Site.find_by name: "www.suomenelaintuhkaus.fi" ;  s.crops.delete_all ; k = s.harvester.perform_harvest ; g = s.crops ; k
 
 
 class WwwSuomenelaintuhkausFi < Harvester
