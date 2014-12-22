@@ -2,20 +2,13 @@ require 'rest_client'
 
 class Scanner
   include Sidekiq::Worker
-  sidekiq_options :queue => SidekiqCtrl.defaultQueue
+  sidekiq_options queue: SidekiqCtrl.defaultQueue
   
   def log s
     if @site
       @my_logger ||= Logger.new Rails.root.join("log", "#{@site.real_code_file_name}_scan.log")
       @my_logger.info s.to_s
     end
-  end
-
-  def initialize
-    @cookies = nil
-    @converters = {}
-    @some_previously_used_encoding = nil
-    @no_encoding_counter = 5
   end
   
   def full_url(url)
@@ -31,8 +24,8 @@ class Scanner
     # log "  => wanting to get #{url}, full: #{full_url(url)}"
     response = RestClient.get full_url(url),
         user_agent: "re-bot",
-        cookies: @cookies
-    @cookies = response.cookies unless response.cookies.blank?
+        cookies: @site.scanner_buffer.cookies
+    @site.scanner_buffer.cookies = response.cookies unless response.cookies.blank?
     response
   end
   
@@ -61,7 +54,7 @@ class Scanner
     end
     
     encoding = @site.encoding if encoding.blank?
-    encoding = @some_previously_used_encoding if encoding.blank?
+    encoding = @site.scanner_buffer.some_previously_used_encoding if encoding.blank?
     
     if (not encoding.blank?) and encoding.downcase == "utf-8"
       log "  => Content is UTF-8"
@@ -73,24 +66,24 @@ class Scanner
       # first try to get or create the Converter, if that works, we believe
       # encoding info is ok
       begin
-        @converters[encoding] ||= Encoding::Converter.new(encoding,"UTF-8")
+        @site.scanner_buffer.converters[encoding] ||= Encoding::Converter.new(encoding,"UTF-8")
       rescue
         encoding = nil
       end
     end
     unless encoding.blank?
       # if nobody set encoding to nil, we have the converter!
-      @no_encoding_counter = 5
-      @some_previously_used_encoding ||= encoding
-      page = @converters[encoding].convert page
+      @site.scanner_buffer.no_encoding_counter = 5
+      @site.scanner_buffer.some_previously_used_encoding ||= encoding
+      page = @site.scanner_buffer.converters[encoding].convert page
       log "  => Content converted from #{encoding} to utf-8"
     else
-      if @no_encoding_counter > 0
-        @no_encoding_counter -= 1
+      if @site.scanner_buffer.no_encoding_counter > 0
+        @site.scanner_buffer.no_encoding_counter -= 1
         log "  \033[35m=> Cannot figure out encoding!\033[0m"
       else
-        if @no_encoding_counter == 0
-          @no_encoding_counter -= 1
+        if @site.scanner_buffer.no_encoding_counter == 0
+          @site.scanner_buffer.no_encoding_counter -= 1
            log "  \033[35m=> Cannot figure out encoding!\033[0m"
           log "  \033[35m=> It seems encoding is not specified accross the site!\033[0m"
           log "  \033[35m=> Scanner will no longer be reporting this message.\033[0m"
@@ -125,16 +118,18 @@ class Scanner
     # flush now to increase possibility that multiple threads log it together
     # later we will make separate log files
     STDOUT.flush
-    log "=> processing #{scan.url}"
+    log "=> fetching #{scan.full_url}"
     
     begin
-      page = get_page scan.url
+      page = get_page scan.full_url
     rescue
+      log "  => error fetching!"
       response = @site.harvester.do_handle_scanning_error $!
+      @site.reset_cookie
       response.each do |action, action_parameters|
         case action
         when :log
-          log "  \033[35m=> #{action_parameters || "Error scanning page"} #{scan.url}\033[0m"
+          log "  \033[35m=> #{action_parameters || "Error scanning page"} #{scan.full_url}\033[0m"
         when :log_error
           log "  \033[35m=> #{$!}\033[0m"
         when :pause
@@ -147,6 +142,7 @@ class Scanner
       end
       return
     end
+    log "  => received, processing"
     page = convert_to_utf page
     scan.last_visited = nil
     scan.content = page
@@ -166,16 +162,23 @@ class Scanner
       end
       # or now, search all links on the site
       # log "    => found link to #{new_url}"
-      result = should_process_page(new_url, scan.url)
+      result = should_process_page(new_url, scan.full_url)
       unless result.blank?
         if result.is_a? Hash and result[:replace_url]
           new_url = result[:replace_url]
         end
         # log "    => should be added, if already there #{new_url}"
         count += 1
-        s1 = @site.scans.find_or_create_by url: new_url do |s|
+        s1 = @site.scans.find_or_create_by url: Scan.url_token(new_url) do |s|
           s.last_visited = nil
           s.referral = scan.url
+          if Scan.url_token(new_url) != new_url
+            # this bizare condition is here because token is different
+            # from URL when URL is too long, and then we do want to remember the original  one
+            puts "    \033[35m=> #HANDLING LONG URL\033[0m"
+            log "    \033[35m=> #HANDLING LONG URL\033[0m"
+            s.actual_url = new_url
+          end
           actual += 1
           # log "    => added #{new_url}"
         end
@@ -190,6 +193,7 @@ class Scanner
   def perform(host, ticket_no)
     @site = Site.find_by(name: host)
     @harvester = @site.harvester
+  
     loop do
       @site.reload
       
@@ -228,6 +232,11 @@ class Scanner
       end
 
       process_url next_scan
+      
+      # Instead of looping, scehedule next here!
+      @site.start_scanner # delay: 0
+      log "  => Scheduling next..." 
+      return
     end
     @site.status = :off
     @site.mode = :off

@@ -1,6 +1,7 @@
 class Scan
   include Mongoid::Document
   field :url, type: String
+  field :actual_url, type: String
   field :content, type: String
   field :last_visited, type: Time, default: nil
   field :seed, type: Mongoid::Boolean, default: false
@@ -24,5 +25,17 @@ class Scan
   
   def html
     Nokogiri::HTML(content)
+  end
+
+  def full_url
+    actual_url.blank? ? url : actual_url
+  end
+  
+  def self.url_token url
+    if url.length > 800
+      url.hash.to_s
+    else
+      url
+    end
   end
 end

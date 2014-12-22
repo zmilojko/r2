@@ -66,18 +66,53 @@ class Site
     true
   end
 
+  class ScannerBuffer
+    def initialize
+      puts "Creating new scanner buffer"
+      reset
+    end
+    def reset
+      @cookies = nil
+      @converters = {}
+      @some_previously_used_encoding = nil
+      @no_encoding_counter = 5
+    end
+    attr_accessor :cookies
+    attr_accessor :converters
+    attr_accessor :some_previously_used_encoding
+    attr_accessor :no_encoding_counter
+  end
+  @scanner_buffers = {}
+  
+  def self.get_scanner_buffer id
+    unless @scanner_buffers[id]
+      @scanner_buffers[id] = ScannerBuffer.new
+    end
+    @scanner_buffers[id]
+  end
+  
+  def scanner_buffer
+    self.class.get_scanner_buffer self.id
+  end
+  
   def new_ticket
     self.ticket_no = SecureRandom.hex
+    scanner_buffer.reset
     puts "My ticket no is #{ticket_no}"
   end
   
+  def reset_cookie
+    scanner_buffer.cookies = nil
+  end
+  
   def start_scanner delay: nil
-#     if delay
-#       Scanner.perform_in delay, name, ticket_no
-#     else
-      puts "Starting scanning task for #{name}"
+    if delay
+      puts "Scheduling scanning task for #{name} with delay #{delay} seconds"
+      Scanner.perform_in delay, name, ticket_no
+    else
+      puts "Scheduling scanning task for #{name}"
       Scanner.perform_async name, ticket_no
-#     end
+    end
   end
   
   after_save do
