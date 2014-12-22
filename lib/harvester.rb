@@ -15,6 +15,10 @@ class Harvester
   
   @site_name = nil
   
+  def self.do_handle_scanning_error err
+    { log: nil, log_error: nil, do_not_try_again: nil, pause: 600 }
+  end
+  
   def self.site site_name
     raise "You cannot call the 'site' method twice" if @filters or @crops
     @site_name = site_name
@@ -71,7 +75,7 @@ class Harvester
     raise "You must define the 'as' attribute for an index" if index_name.blank?
     my_crop.first[:index] = {
       name: name,
-      class_name: :index_name,
+      class_name: index_name.capitalize,
       block: block
     }
   end
@@ -308,6 +312,7 @@ class Harvester
   class Indexer
     attr_reader :counter
     attr_reader :creation
+    attr_reader :crop
     
     def initialize crop, index, counter_value
       @crop = crop

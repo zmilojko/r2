@@ -1,8 +1,6 @@
 # -*- coding: UTF-8 -*-
 require 'harvester'
 
-# reload! ; require 'harvester' ; Harvester.set_debug true ; s = Site.find_by name: "www.retkitukku.fi" ;  s.crops.delete_all ; k = s.harvester.perform_harvest ; g = s.crops ; k
-
 class WwwRetkitukkuFi < Harvester
   site "www.retkitukku.fi"
 
@@ -25,12 +23,7 @@ class WwwRetkitukkuFi < Harvester
     find css: 'div.MagicToolboxContainer a.MagicZoomPlus', as: :pic_1
     find css: '.product-name h1', as: :h1_name
     find xpath: '//div[@class="product-shop"]//span[starts-with(@id, "product-price-") and not(string-length(@id) > 20)]', as: :price_tag
-    # find xpath: '//span[starts-with(@id, "product-price-") and not(contains(@id, "clone")) and not(contains(@id, "related")) and not(contains(@id, "upsell"))]', as: :price_tag
-    # find css: 'div.product-shop div.price-box span.price', as: :price_tag
-    
-    # c = s.scans.find_by url: "http://www.retkitukku.fi/alaska-mount-hunter-pro-untuvatakki.html"
-    # c.html.css( "div.MagicToolboxContainer  a.MagicZoomPlus").href
-    
+
     scrape :price_tag, only: :once do
       mandatory :h1_name
       name h1_name.text, :sort
@@ -43,6 +36,7 @@ class WwwRetkitukkuFi < Harvester
   index :product do
     pid counter
     name
+    price crop.price.strip
     url :origin_url
     image_id :image_url
     shop 'retkitukku'

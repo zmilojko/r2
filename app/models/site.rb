@@ -60,17 +60,29 @@ class Site
   before_validation do
     if mode_changed? and mode_was_sym == :off and mode_sym != :off
       puts "Decided to start the task on #{name}"
-      self.ticket_no = SecureRandom.hex
-      puts "My ticket no is #{ticket_no}"
+      new_ticket
       @should_start_scanning = true
     end
     true
   end
+
+  def new_ticket
+    self.ticket_no = SecureRandom.hex
+    puts "My ticket no is #{ticket_no}"
+  end
+  
+  def start_scanner delay: nil
+#     if delay
+#       Scanner.perform_in delay, name, ticket_no
+#     else
+      puts "Starting scanning task for #{name}"
+      Scanner.perform_async name, ticket_no
+#     end
+  end
   
   after_save do
     if @should_start_scanning
-      puts "Starting scanning task for #{name}"
-      Scanner.perform_async name, ticket_no
+      start_scanner
     end
     @should_start_scanning = false
     true
@@ -100,7 +112,7 @@ class Site
     save
   end
   
-  def scan_report limit: 200
+  def scan_report limit: 20
     results = {
       seeds: scans.where(seed: true).limit(limit).as_json,
       latest_scans: scans.where(:last_visited.ne => nil).order(last_visited: :desc).limit(limit).as_json,

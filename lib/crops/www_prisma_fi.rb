@@ -27,7 +27,7 @@ class WwwPrismaFi < Harvester
       else    
 #         puts "Referal is #{referral}, url is #{url}, first verdict is #{result}"
         %w(mainokset ostoskori haku logon logoff order checkout shipment image
-          palvelut myymala).each do |w| 
+          palvelut myymala tel: ).each do |w| 
           if url[Regexp.new(w,"i")]
             result = false
             break

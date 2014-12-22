@@ -15,6 +15,7 @@ class Scanner
     @cookies = nil
     @converters = {}
     @some_previously_used_encoding = nil
+    @no_encoding_counter = 5
   end
   
   def full_url(url)
@@ -79,11 +80,22 @@ class Scanner
     end
     unless encoding.blank?
       # if nobody set encoding to nil, we have the converter!
+      @no_encoding_counter = 5
       @some_previously_used_encoding ||= encoding
       page = @converters[encoding].convert page
       log "  => Content converted from #{encoding} to utf-8"
     else
-      log "  \033[35m=> Cannot figure out encoding!\033[0m"
+      if @no_encoding_counter > 0
+        @no_encoding_counter -= 1
+        log "  \033[35m=> Cannot figure out encoding!\033[0m"
+      else
+        if @no_encoding_counter == 0
+          @no_encoding_counter -= 1
+           log "  \033[35m=> Cannot figure out encoding!\033[0m"
+          log "  \033[35m=> It seems encoding is not specified accross the site!\033[0m"
+          log "  \033[35m=> Scanner will no longer be reporting this message.\033[0m"
+        end
+      end
     end
     page
   end
@@ -118,10 +130,21 @@ class Scanner
     begin
       page = get_page scan.url
     rescue
-      log "  \033[35m=> Cannot find page #{scan.url}\033[0m"
-      scan.scanning_error = convert_to_utf($!)
-      scan.last_visited = Time.now
-      scan.save!
+      response = @site.harvester.do_handle_scanning_error $!
+      response.each do |action, action_parameters|
+        case action
+        when :log
+          log "  \033[35m=> #{action_parameters || "Error scanning page"} #{scan.url}\033[0m"
+        when :log_error
+          log "  \033[35m=> #{$!}\033[0m"
+        when :pause
+          raise "Error occured, try again soon."
+        when :ignore, :do_not_try_again
+          scan.scanning_error = convert_to_utf($!)
+          scan.last_visited = Time.now
+          scan.save!
+        end
+      end
       return
     end
     page = convert_to_utf page
