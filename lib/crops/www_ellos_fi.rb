@@ -33,16 +33,15 @@ class WwwEllosFi < Harvester
   end
   
   harvest do
-    # find css: 'td.content_table' do
-    #   find css: 'p'
-    # end
+    find css: 'div#details-wrapper' do
+      find css: 'h1', as: :product_name
+      find css: 'span.price', as: :product_price
+    end
 
-    # scrape :p do
-    #   city td.css('h1').text, :mandatory
-    #   name p.css_any('a', 'strong').text, :sort
-    #   url p.href
-    #   info p.text
-    # end
+    scrape :product_price do
+      name product_name.text, :sort
+      price product_price.text
+    end
   end
 end
 

@@ -131,6 +131,8 @@ class Harvester
         end
         site.crops.create! new_results
         results_count += new_results.count
+        
+        duts "  => So far #{results_count} crops harvested"
       else
         duts "  X filtered out"
       end
@@ -150,7 +152,7 @@ class Harvester
       found_nodes = node.css f[:css] if f[:css]
       found_nodes = node.xpath f[:xpath] if f[:xpath]
       found_nodes.each do |found_node|
-        duts "  #{'  ' * depth}=> found #{f[:as]}: #{found_node.to_s[0,60 - depth * 2]}"
+        duts "  #{'  ' * depth}=> found #{f[:as]}: #{found_node.to_s.gsub(/[\s\n]+/," ").gsub(/\n/," ")[0,60 - depth * 2]}"
         found_nodes_hash[f[:as]] = found_node
         #Notice that the last one actually stays defined forever!
         results.push *(harvest_for harvest: harvest, name: f[:as], node: found_node, found_nodes_hash: found_nodes_hash, depth: depth + 1, scan: scan)
