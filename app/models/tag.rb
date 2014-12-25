@@ -2,11 +2,16 @@ class Tag
   include Mongoid::Document
   field :name, type: String
   field :do_use_as_tag, type: Mongoid::Boolean, default: false
+  field :do_use_as_keyword, type: Mongoid::Boolean, default: false
+  field :do_use_as_product_description, type: Mongoid::Boolean, default: false
   field :do_ignore_word, type: Mongoid::Boolean, default: false
   embeds_many :keywords
   
 #   index({ name: 1 })
 #   index({"keywords.word" => 1})
+  def processed
+    do_use_as_tag or do_use_as_keyword or do_ignore_word or do_use_as_product_description
+  end
   
   def self.generate_from site: nil
     raise "Must specify site" unless site
@@ -16,10 +21,11 @@ class Tag
     site.crops.each do |c|
       c.name.downcase.split.each do |w|
         catch :keyword_processing do
-          clear_word = w.gsub(/[®\,\(\)\:\/\"]+/,"")
-          clear_word.gsub!(/^[\s\-\dx\.\ ]+/,"")
-          clear_word.gsub!(/[\s\-\dx\.\ ]+$/,"")
+          clear_word = w.gsub(/[®\,\(\)\:\/\"\"\–]+/,"")
+          clear_word.gsub!(/^[\s\-\dx\.\ \ ]+/,"")
+          clear_word.gsub!(/[\s\-\dx\.\ \ ]+$/,"")
           clear_word.gsub!(/\'s$/,"")
+          clear_word.gsub!(/\'/,"")
           
           # ignore word if it does not contain any letters
           #unless clear_word[/[\d\s\.\-\_\,\'\"]+/] then throw :keyword_processing end
@@ -37,9 +43,10 @@ class Tag
   
   def self.dump_to_csv_file filename
     File.open(filename, 'w') do |file| 
-      Tag.all.sort_by!{|x|x.name}.each do |tag|
+      Tag.all.order_by(name: :asc).each do |tag|
         file.write(tag.name + "\n")
       end
-    end    
+    end
+    Tag.all.count
   end
 end
