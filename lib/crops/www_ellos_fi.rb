@@ -35,12 +35,12 @@ class WwwEllosFi < Harvester
   harvest do
     find css: 'div#details-wrapper' do
       find css: 'h1', as: :product_name
-      find css: 'span.price', as: :product_price
+      find css: 'span.price', as: :product_price_new
     end
 
-    scrape :product_price do
+    scrape :product_name do
       name product_name.text, :sort
-      price product_price.text
+      price ((defined? product_price_new) ? product_price_new.text : product_price.text)
     end
   end
 end

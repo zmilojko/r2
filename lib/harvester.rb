@@ -204,6 +204,9 @@ class Harvester
       @defined_node_methods.include? method_symbol.to_sym
     end
     
+    def node_found? node_name
+      self.class.node_method_defined? node_name
+    end
     
     def initialize scraper, scan, debug
       @scaper = scraper

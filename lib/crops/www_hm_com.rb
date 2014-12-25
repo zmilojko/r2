@@ -36,15 +36,17 @@ class WwwHmCom < Harvester
   end
   
   harvest do
-    # find css: 'td.content_table' do
-    #   find css: 'p'
-    # end
+    find css: 'form#product' do
+      find css: 'h1', as: :product_name_block do
+        find css: 'span.price', as: :product_price do
+          find css: 'span.new', as: :product_price_new
+        end
+      end
+    end
 
-    # scrape :p do
-    #   city td.css('h1').text, :mandatory
-    #   name p.css_any('a', 'strong').text, :sort
-    #   url p.href
-    #   info p.text
-    # end
+    scrape :product_name_block do
+      name form.css('h1 > text()').text.strip, :sort
+      price (node_found?(:product_price_new) ? self.product_price_new.text : self.product_price.text).strip
+    end
   end
 end

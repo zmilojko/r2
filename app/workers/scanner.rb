@@ -1,5 +1,7 @@
 require 'rest_client'
 
+STDOUT.sync = true
+
 class Scanner
   include Sidekiq::Worker
   sidekiq_options queue: SidekiqCtrl.defaultQueue
@@ -58,6 +60,7 @@ class Scanner
     
     if (not encoding.blank?) and encoding.downcase == "utf-8"
       log "  => Content is UTF-8"
+      @site.scanner_buffer.no_encoding_counter = 5
       return page
     end
     
@@ -117,7 +120,7 @@ class Scanner
   def process_url(scan)
     # flush now to increase possibility that multiple threads log it together
     # later we will make separate log files
-    STDOUT.flush
+    # STDOUT.flush
     log "=> fetching #{scan.full_url}"
     
     begin
@@ -191,6 +194,8 @@ class Scanner
   end
   
   def perform(host, ticket_no)
+    log "  => Starting..." 
+    
     @site = Site.find_by(name: host)
     @harvester = @site.harvester
   
