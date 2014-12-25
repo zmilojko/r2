@@ -109,9 +109,10 @@ class Scanner
     end
     
     if @site.harvester.class == Harvester
+      
       return true # there is no harvester - get the whole site
     end
-    result = @site.harvester.filter_url url, filter_for: :crowling, referral: referral
+    result = @site.harvester.filter_url url, filter_for: :crowling, referral: referral, site: @site
     return false if result.blank?
 
     result
@@ -156,7 +157,51 @@ class Scanner
     
     count = 0
     actual = 0
+    # log "  => analyzing step 1"
+    potential_urls = all_links.map do |link| 
+      begin
+        l = link.attributes['href'].value
+        l.blank? ? nil : l
+      rescue
+        nil
+      end
+    end.compact
     
+    # log "  => analyzing step 2"
+    
+    filtered_urls = potential_urls.map do |link|
+      result = should_process_page((new_url = link), scan.full_url)
+      unless result.blank?
+        if result.is_a? Hash and result[:replace_url]
+          new_url = result[:replace_url]
+        end
+        new_url        
+      else
+        nil
+      end
+    end.compact
+    # log "  => analyzing step 3"
+    moped_error_level = Moped.logger.level
+    Moped.logger.level = Logger::ERROR
+    Mongoid.logger.level = Logger::ERROR
+    existing_urls = @site.scans.where(:url.in => filtered_urls).batch_size(4000).all.map { |z| z.url }
+    # Moped.logger.level = moped_error_level
+    # log "  => analyzing step 4"
+    new_counter = 0
+    filtered_urls.each do |x|
+      unless existing_urls.any? {|y| y == Scan.url_token(x) }
+        # log "    => creating url"
+        @site.scans.create url: Scan.url_token(x),
+          last_visited: nil,
+          referral: scan.url,
+          actual_url: ((Scan.url_token(x) != x) ? x : nil)
+        new_counter += 1
+      end
+    end
+    # log "  => analyzing step 5"
+    log "  => analyzed #{potential_urls.count}/#{filtered_urls.count}/#{new_counter} new urls for later"
+
+=begin
     all_links.each do |link|
       begin
         new_url = link.attributes['href'].value
@@ -187,10 +232,11 @@ class Scanner
         end
       end
     end
+=end
     
     scan.last_visited = Time.now
     scan.save!
-    log "  => queued #{all_links.count}/#{count}/#{actual} new urls for later"
+    #log "  => queued #{all_links.count}/#{count}/#{actual} new urls for later"
   end
   
   def perform(host, ticket_no)
@@ -226,12 +272,12 @@ class Scanner
       @site.status = :on
       @site.save!
   
-      log "  => Looking for new scan to attack..." 
+      #log "  => Looking for new scan to attack..." 
       
       # next_scan = Scan.find_by site_id: @site.id, last_visited: nil
       next_scan = @site.scans.where(last_visited: nil).order_by(:created_at => 'desc').first
       
-      log "  => Found #{next_scan.url}..." if next_scan
+      #log "  => Found next..." if next_scan
       
       if next_scan.nil?
         log "Completed scanning"
@@ -245,7 +291,7 @@ class Scanner
       
       # Instead of looping, scehedule next here!
       @site.start_scanner # delay: 0
-      log "  => Scheduling next..." 
+      # log "  => Scheduling next..." 
       return
     end
     @site.status = :off

@@ -99,8 +99,8 @@ class Harvester
     filename.to_s
   end
   
-  def self.filter_url url, filter_for: :anything, referral: nil
-    do_filter url, filter_for: filter_for, referral: referral
+  def self.filter_url url, filter_for: :anything, referral: nil, site: nil
+    do_filter url, filter_for: filter_for, referral: referral, site: site
   end
   
   def self.perform_harvest name: nil
@@ -110,7 +110,7 @@ class Harvester
     raise "nothing to harvest. Define a harvest before performing it." unless current_harvest
     results_count = 0
     
-    site = Site.find_by name: @site_name
+    site ||= Site.find_by name: @site_name
     sort = nil # sort is remembered, but is not currently used
                # it will be used later, when these definitions become
                # part of the Site object. Sort will be used when querying
@@ -351,11 +351,12 @@ class Harvester
     end
   end
   
-  def self.do_filter scan, filter_for: :anything, referral: nil
+  def self.do_filter scan, filter_for: :anything, referral: nil, site: nil
     return true if @site_name.blank?
+    site ||= Site.find_by(name: @site_name)
     
     if scan.class == String
-      scan = Site.find_by(name: @site_name).scans.new do |s|
+      scan = site.scans.new do |s|
         s.last_visited = nil
         s.referral = referral
         s.url = scan
