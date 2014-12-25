@@ -220,8 +220,13 @@ class Scanner
       
       @site.status = :on
       @site.save!
+  
+      log "  => Looking for new scan to attack..." 
       
-      next_scan = @site.scans.find_by(last_visited: nil)
+      # next_scan = Scan.find_by site_id: @site.id, last_visited: nil
+      next_scan = @site.scans.where(last_visited: nil).order_by(:created_at => 'desc').first
+      
+      log "  => Found #{next_scan.url}..." if next_scan
       
       if next_scan.nil?
         log "Completed scanning"

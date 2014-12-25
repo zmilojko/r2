@@ -9,8 +9,11 @@ class Scan
   field :scanning_error
   belongs_to :site
   
-  index({ site: 1, last_visited: 1 }, { background: true })
-  index({ site: 1, url: 1 }, { background: true })
+  index({ id: 1})
+  index({ site_id: 1, last_visited: 1 })
+#   index({ last_visited: 1 })
+  index({ site_id: 1, url: 1 })
+#   index({ url: 1 })
   
   def never_visited
     last_visited.nil?
