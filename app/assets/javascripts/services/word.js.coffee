@@ -22,7 +22,8 @@
   ($http, $q) -> 
     s =
       constructor: ->
-        @front_end_buffer_size = 10
+        @front_end_buffer_size = 20
+        @eagerness = 3
         # Following is the key by which sorting is done
         @identifier = 'name'
         @front_end_buffer = null
@@ -44,6 +45,10 @@
       # Normally this would be used with -1 or 1.
       item_relative: (item, offset) ->
         if @front_end_buffer? and @front_end_buffer_index_low <= item.index + offset <= @front_end_buffer_index_high
+          #eager loading
+          if (offset < 0 and @front_end_buffer_index_low + @eagerness > item.index + offset) or 
+              (offset > 0 and item.index + offset > @front_end_buffer_index_high - @eagerness)
+            s._reload_by_index(item.index, offset)
           $q.when { item: s._find_by_index(item.index + offset), total_count: s.total_count }
         else
           s._reload_by_index(item.index, offset)
