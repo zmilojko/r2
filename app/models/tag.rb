@@ -51,7 +51,7 @@ class Tag
   end
   def self.load_from_csv_file filename
     File.open(filename).each do |line| 
-      Tag.create! name: line
+      Tag.create! name: line.strip
     end
     Tag.all.count
   end
