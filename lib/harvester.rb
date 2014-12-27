@@ -382,6 +382,8 @@ class Harvester
             end
           end
         rescue
+          puts "rescued for #{scan.url} on error #{$!}"
+          # raise
         end
       end
     end

@@ -9,17 +9,24 @@ class BestsellerCom < Harvester
   filter only_for: :always do
     result = true
     %w(page-setcountry wishlist cart order history page-handover
-       source=quickview storefront).each do |w| 
+       source=quickview payment customer contact).each do |w| 
       if url.downcase.include? w
-        result = false
-        break
+        puts "getting out for #{url} on word #{w}"
+        return false
       end
     end
     
     # http://bestseller.com/on/demandware.store/Sites-ROE-Site/en_GB/Search-Show?redirected=1&cgid=bc-kids-sale&forcecountry=FI&forcebrand=bestseller-com#/Storefront-Catalog---EN/root,en_GB,sc.html?prefn1=category-id&prefv1=ni-newborn-restsalg%7Cni-mini-restsalg%7Cni-kids-restsalg%7Cpc-greatoffers-little&prefn2=product-type-code&prefv2=0%7C1%7C4&prefn3=scopeFilter&prefv3=default&srule=bc-new-arrivals&start=96&sz=12&renderascategory=bc-kids-sale
     # must replace "start=96" with start=24, basically no matter what, reduce 72
     
-    result = { replace_url: url.gsub(/start=(\d{2,3})/) {|c| "start=#{c[/\d+/].to_i - 72}" } }
+    if url[/start=(\d{2,3})/] and url.include?("renderascategory=bc-kids-sale")
+      puts "found page url for #{url}"
+      result = { replace_url: url.gsub(/start=(\d{2,3})/) {|c| "start=#{c[/\d+/].to_i - 72}" } }
+    else
+      puts "found product url for #{url}"
+      result = { replace_url: url.gsub(/\?.*$/,"") }
+    end
+    result
   end
 
   # http://bestseller.com/name-it/tops-l-s/newborn-asi-slim-top/13113190,en_GB,pd.html?dwvar_13113190_colorPattern=13113190_CloudDancer&forceScope=
