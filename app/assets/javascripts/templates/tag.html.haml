@@ -1,5 +1,9 @@
 %div(ng-controller="TagController")
   .row
+    .col-xs-12
+      .alert.alert-danger(role="alert" ng-if="error_message")
+        {{error_message}}
+  .row
     .col-sm-6.col-xs-12
       %div
         %p
