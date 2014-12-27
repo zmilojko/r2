@@ -58,6 +58,7 @@
         null
       # private helpers
       _find_item: (id) ->
+        id = null if id == "undefined"
         return item for item in s.front_end_buffer when (not id?) or item[s.identifier] == id
       _find_by_index: (index) ->
         return item for item in s.front_end_buffer when item.index == index
