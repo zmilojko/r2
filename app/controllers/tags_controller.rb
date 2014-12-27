@@ -5,6 +5,7 @@ class TagsController < ApplicationController
   # GET /tags.json
   def index
     # set default values
+    around = (params[:around].blank? ? nil : params[:around])
     count = (params[:count].blank? ? 100 : params[:count].to_i)
     index = (params[:index].blank? ? 0 : params[:index].to_i)
     offset = (params[:offset].blank? ? 0 : params[:offset].to_i)
@@ -13,6 +14,17 @@ class TagsController < ApplicationController
     puts "index = #{index}"
     puts "offset = #{offset}"
 
+    unless around.blank?
+      Tag.order_by(name: :asc).each_with_index do |tag, i|
+        if tag.name == around
+          index = i
+          break
+        end
+      end
+      puts "found document #{around} at index #{index}"
+    end
+    
+    start = [index + offset - count / 2, 0].max
     tags_list = Tag.order_by(name: :asc)
       .limit(count)
       .offset(start).as_json
