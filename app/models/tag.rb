@@ -49,4 +49,10 @@ class Tag
     end
     Tag.all.count
   end
+  def self.load_from_csv_file filename
+    File.open(filename).each do |line| 
+      Tag.create! name: line
+    end
+    Tag.all.count
+  end
 end
