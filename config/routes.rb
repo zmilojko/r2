@@ -2,6 +2,8 @@ require 'sidekiq/web'
 
 Rails.application.routes.draw do
 
+  resources :tags
+
   resources :sites do
     resources :scans do
       get 'report', on: :collection

@@ -27,6 +27,9 @@
     when('/sites/:siteName', {
       templateUrl: 'site.html',
     }).
+    when('/tags', {
+      templateUrl: 'tag.html',
+    }).
     when('/404', {
       templateUrl: '404.html',
     }).

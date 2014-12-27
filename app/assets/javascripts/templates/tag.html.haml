@@ -1,0 +1,9 @@
+%div(ng-controller="TagController")
+  .row
+    .col-sm-6.col-xs-12
+      %div
+        %p
+          {{item.name}}
+      %div
+        %button.btn(ng-click="previousWord()" ng-disabled="item.index === 0") Previous
+        %button.btn(ng-click="nextWord()" ng-disabled="!there_is_next") Next
