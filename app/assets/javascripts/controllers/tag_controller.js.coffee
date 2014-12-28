@@ -11,11 +11,9 @@
     $scope._errorHandler = (error) ->
       $scope.error_message = "An error has occured."
     $scope.previousWord = ->
-      console.log "previous clicked"
       wordService.item_relative($scope.item, -1)
       .then($scope._rememberItem,$scope._errorHandler)
     $scope.nextWord = ->
-      console.log "next clicked"
       wordService.item_relative($scope.item, +1)
       .then($scope._rememberItem,$scope._errorHandler)
     wordService.item(decodeURIComponent($routeParams.tagName))
