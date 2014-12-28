@@ -77,6 +77,13 @@ class TagsController < ApplicationController
   # PATCH/PUT /tags/1.json
   def update
     respond_to do |format|
+#       params[:tag].delete :_id
+#       params[:tag].delete :keywords
+#       params[:tag].delete :index
+#       params[:tag].delete :name
+#       puts params[:tag]
+      puts tag_params
+      sleep(0.5)
       if @tag.update(tag_params)
         format.json { render json: @tag }
       else
@@ -102,6 +109,6 @@ class TagsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def tag_params
-      params[:tag]
+      params.require(:tag).permit(:name, :do_ignore_word, :do_use_as_keyword, :do_use_as_product_description, :do_use_as_tag, {keywords: [:word]})
     end
 end

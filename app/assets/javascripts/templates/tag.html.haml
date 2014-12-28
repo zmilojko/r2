@@ -5,9 +5,33 @@
         {{error_message}}
   .row
     .col-sm-6.col-xs-12
-      %div
-        %p
-          {{item.name}}
-      %div
-        %button.btn(ng-click="previousWord()" ng-disabled="item.index === 0") Previous
-        %button.btn(ng-click="nextWord()" ng-disabled="!there_is_next") Next
+      .form-group(style="height: 70px; margin-bottom: 0px;margin-top: 20px;")
+        %h3(ng-hide="editingWord") Word: {{item.name}}
+        %button.btn.btn-md.btn-link(ng-hide="editingWord" ng-click="editingWord = true")
+          %span Rename word
+          %span.glyphicon.glyphicon-pencil
+        %h3(ng-show="editingWord")
+        .input-group(ng-show="editingWord")
+          %input.form-control(value="{{item.name}}")
+          %span.input-group-addon(ng-click="editingWord = false")
+            %span.glyphicon.glyphicon-remove
+          %span.input-group-addon
+            %span.glyphicon.glyphicon-ok
+      .form-group
+        %auto-checkbox(ac-click="update()" ac-value="item.do_use_as_tag") Use as tag.
+        %div
+          %button.btn.btn-md.btn-link(ng-repeat="kw in item.keywords")
+            %span {{kw.word}}
+            %span.glyphicon.glyphicon-remove
+        %div
+          %button.btn.btn-md.btn-link
+            %span Add new keyword
+            %span.glyphicon.glyphicon-plus
+      .form-group
+        %auto-checkbox(ac-click="update()" ac-value="item.do_use_as_keyword") Use as keyword.
+        %auto-checkbox(ac-click="update()" ac-value="item.do_use_as_product_description")
+          Use as product description (lowest prioriy usage, if no other has yielded results).
+        %auto-checkbox(ac-click="update()" ac-value="item.do_ignore_word") Ignore.
+      .form-group
+        %button.btn.btn-default(ng-click="previousWord()" ng-disabled="item.index === 0") Previous
+        %button.btn.btn-default(ng-click="nextWord()" ng-disabled="!there_is_next") Next

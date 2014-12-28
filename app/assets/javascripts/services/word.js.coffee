@@ -56,6 +56,8 @@
             { item: s._find_by_index(item.index + offset), total_count: s.total_count }
       range: (low_id, high_id) ->
         null
+      update: (item) ->
+        $http.put "./tags/#{item._id.$oid}.json", {"tag": item}
       # private helpers
       _find_item: (id) ->
         id = null if id == "undefined"
