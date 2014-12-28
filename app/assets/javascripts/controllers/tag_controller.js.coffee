@@ -6,7 +6,6 @@
     $scope.editingWord = false
     $scope._rememberItem = (resp) ->
       $scope.item = resp.item
-      $scope.there_is_next = $scope.item.data.index < resp.total_count - 1
       $location.path("tags/#{encodeURIComponent($scope.item.data.name)}")
       $scope.error_message = null
     $scope._errorHandler = (error) ->

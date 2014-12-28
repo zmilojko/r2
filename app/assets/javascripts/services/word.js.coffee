@@ -74,10 +74,10 @@
           s._save_results(resp)
       _save_results: (resp) ->
         s.front_end_buffer = []
-        for i in resp.data.list
+        for d, i in resp.data.list
           s.front_end_buffer.push
-            data: i
-            copy: angular.copy(i)
+            data: d
+            copy: angular.copy(d)
             save: ->
               me = this
               s.update(me)
@@ -85,7 +85,9 @@
                 me.data = angular.copy(me.copy)
               .catch (e) ->
                 me.copy = angular.copy(me.data)
-                throw e        
+                throw e
+            is_first: i == 0
+            is_last: i == resp.data.list.length - 1
         s.front_end_buffer_limit_low = resp.data.list[0][s.identifier]
         s.front_end_buffer_limit_high = resp.data.list[-1..][0][s.identifier]
         s.front_end_buffer_index_low = resp.data.list[0].index
