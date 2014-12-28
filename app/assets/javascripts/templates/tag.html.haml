@@ -9,7 +9,7 @@
         %zt-textbox(zt-field="name" zt-update-success="handleSuccessfulNameChange()")
           %h3 Word: {{item.copy.name}}
       .form-group
-        %auto-checkbox(ac-field="do_use_as_tag") Use as tag.
+        %zt-auto-checkbox(zt-field="do_use_as_tag") Use as tag.
         %div
           %button.btn.btn-md.btn-link(ng-repeat="kw in item.keywords")
             %span {{kw.word}}
@@ -19,10 +19,10 @@
             %span Add new keyword
             %span.glyphicon.glyphicon-plus
       .form-group
-        %auto-checkbox(ac-field="do_use_as_keyword") Use as keyword.
-        %auto-checkbox(ac-field="do_use_as_product_description")
+        %zt-auto-checkbox(zt-field="do_use_as_keyword") Use as keyword.
+        %zt-auto-checkbox(zt-field="do_use_as_product_description")
           Use as product description (lowest prioriy usage, if no other has yielded results).
-        %auto-checkbox(ac-field="do_ignore_word") Ignore.
+        %zt-auto-checkbox(zt-field="do_ignore_word") Ignore.
       .form-group
         %button.btn.btn-default(ng-click="previousWord()" ng-disabled="item.is_first") Previous
         %button.btn.btn-default(ng-click="nextWord()" ng-disabled="item.is_last") Next
