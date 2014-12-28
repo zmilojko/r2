@@ -18,7 +18,7 @@
           %span.input-group-addon
             %span.glyphicon.glyphicon-ok
       .form-group
-        %auto-checkbox(ac-item="item" ac-field="do_use_as_tag") Use as tag.
+        %auto-checkbox(ac-field="do_use_as_tag") Use as tag.
         %div
           %button.btn.btn-md.btn-link(ng-repeat="kw in item.keywords")
             %span {{kw.word}}
@@ -28,10 +28,10 @@
             %span Add new keyword
             %span.glyphicon.glyphicon-plus
       .form-group
-        %auto-checkbox(ac-item="item" ac-field="do_use_as_keyword") Use as keyword.
-        %auto-checkbox(ac-item="item" ac-field="do_use_as_product_description")
+        %auto-checkbox(ac-field="do_use_as_keyword") Use as keyword.
+        %auto-checkbox(ac-field="do_use_as_product_description")
           Use as product description (lowest prioriy usage, if no other has yielded results).
-        %auto-checkbox(ac-item="item" ac-field="do_ignore_word") Ignore.
+        %auto-checkbox(ac-field="do_ignore_word") Ignore.
       .form-group
-        %button.btn.btn-default(ng-click="previousWord()" ng-disabled="item.data.index === 0") Previous
-        %button.btn.btn-default(ng-click="nextWord()" ng-disabled="!there_is_next") Next
+        %button.btn.btn-default(ng-click="previousWord()" ng-disabled="item.is_first") Previous
+        %button.btn.btn-default(ng-click="nextWord()" ng-disabled="item.is_last") Next

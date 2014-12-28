@@ -5,7 +5,7 @@
     scope:
       #func: '&reName' # isolate scope of a function, passed as a value 
                        # of the attribute with the name of the directive
-      acItem: '='      # isolate scope of a model (both ways), passed with an 
+      acItem: '=?'      # isolate scope of a model (both ways), passed with an 
                        # attribute disabled="XXX", where XXX is a variable of 
                        # the scope
       acField: '@'     # isolate scope of a variable (in only), passed with 
@@ -15,11 +15,13 @@
       $scope.updateFail = false
       $scope.updateInProgress = false
       $scope.randomCounter = 0
+      $scope.getItem = ->
+        $scope.acItem or $scope.$parent.item
       $scope.doPerformUpdate = ->
         $scope.updateInProgress = true
         $scope.updateSuccess = false
         $scope.updateFail = false
-        $scope.acItem.save()
+        $scope.getItem().save()
         .then ->
           $scope.updateInProgress = false
           $scope.updateSuccess = true
