@@ -1,9 +1,15 @@
 @r2_module.controller 'TagController', [
-  '$scope', '$routeParams', '$location', '$window', 'wordService', 
-  ($scope, $routeParams, $location, $window, wordService) ->
+  '$scope', '$routeParams', '$location', '$window', '$timeout', 'wordService', 
+  ($scope, $routeParams, $location, $window, $timeout, wordService) ->
     $scope.item = null
     $scope.error_message = null
-    $scope.editingWord = false
+    $scope.handleSuccessfulNameChange = ->
+      $timeout ->
+        $location.replace()
+        $scope.updateUrl()
+      ,2010
+    $scope.updateUrl = ->
+      $location.path("tags/#{encodeURIComponent($scope.item.data.name)}")
     $scope._rememberItem = (resp) ->
       $scope.item = resp.item
       $location.path("tags/#{encodeURIComponent($scope.item.data.name)}")

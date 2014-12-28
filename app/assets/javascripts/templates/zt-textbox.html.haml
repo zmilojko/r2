@@ -1,0 +1,11 @@
+%form(name="form" style="height: 70px; margin-bottom: 0px;margin-top: 20px;")
+  %span(ng-transclude ng-hide="editingWord")
+  %span.text-muted(ng-hide="editingWord" ng-click="startEditing()") (edit)
+  %span.glyphicon.glyphicon-ok.text-success(ng-show="updateSuccess && !editingWord")
+  .input-group(ng-show="editingWord")
+    %input.form-control(ng-model="getItem().copy[ztField]" )
+    %span.input-group-addon(ng-click="cancelEditing()")
+      %span.glyphicon.glyphicon-remove
+    %span.input-group-addon(ng-click="completeEditing()")
+      %span.glyphicon.glyphicon-warning-sign.text-danger(ng-show="updateFail" title="Could not save changes. Check your connection. This might also be a server error. It is recommended you refresh the page if the problem persists.")
+      %span.glyphicon(ng-class="{'text-success': updateSuccess, 'glyphicon-refresh': updateInProgress, 'text-warning': updateInProgress, 'glyphicon-ok': !updateInProgress}")

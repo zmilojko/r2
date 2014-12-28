@@ -83,9 +83,8 @@
               s.update(me)
               .then ->
                 me.data = angular.copy(me.copy)
-              .catch (e) ->
-                me.copy = angular.copy(me.data)
-                throw e
+            revert: ->
+              this.copy = angular.copy(this.data)
             is_first: i == 0
             is_last: i == resp.data.list.length - 1
         s.front_end_buffer_limit_low = resp.data.list[0][s.identifier]
