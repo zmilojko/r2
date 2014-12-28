@@ -15,23 +15,27 @@
       $scope.updateFail = false
       $scope.updateInProgress = false
       $scope.randomCounter = 0
+      $scope.randomCounter2 = 0
       $scope.getItem = ->
         $scope.acItem or $scope.$parent.item
       $scope.doPerformUpdate = ->
         $scope.updateInProgress = true
         $scope.updateSuccess = false
         $scope.updateFail = false
+        $scope.randomCounter2++
+        randomCounter2 = $scope.randomCounter2
         $scope.getItem().save()
         .then ->
-          $scope.updateInProgress = false
-          $scope.updateSuccess = true
-          $scope.updateFail = false
-          $scope.randomCounter++
-          randomCounter = $scope.randomCounter
-          $timeout ->
-            if randomCounter == $scope.randomCounter
-              $scope.updateSuccess = false
-          ,2000
+          if randomCounter2 == $scope.randomCounter2
+            $scope.updateInProgress = false
+            $scope.updateSuccess = true
+            $scope.updateFail = false
+            $scope.randomCounter++
+            randomCounter = $scope.randomCounter
+            $timeout ->
+              if randomCounter == $scope.randomCounter
+                $scope.updateSuccess = false
+            ,2000
         .catch ->
           $scope.updateInProgress = false
           $scope.updateFail = true
