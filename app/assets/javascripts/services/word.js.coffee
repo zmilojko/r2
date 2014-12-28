@@ -44,26 +44,26 @@
       # Method relative returns item with given offset from current item
       # Normally this would be used with -1 or 1.
       item_relative: (item, offset) ->
-        if @front_end_buffer? and @front_end_buffer_index_low <= item.index + offset <= @front_end_buffer_index_high
+        if @front_end_buffer? and @front_end_buffer_index_low <= item.data.index + offset <= @front_end_buffer_index_high
           #eager loading
-          if (offset < 0 and @front_end_buffer_index_low + @eagerness > item.index + offset) or 
-              (offset > 0 and item.index + offset > @front_end_buffer_index_high - @eagerness)
-            s._reload_by_index(item.index, offset)
-          $q.when { item: s._find_by_index(item.index + offset), total_count: s.total_count }
+          if (offset < 0 and @front_end_buffer_index_low + @eagerness > item.data.index + offset) or 
+              (offset > 0 and item.data.index + offset > @front_end_buffer_index_high - @eagerness)
+            s._reload_by_index(item.data.index, offset)
+          $q.when { item: s._find_by_index(item.data.index + offset), total_count: s.total_count }
         else
-          s._reload_by_index(item.index, offset)
+          s._reload_by_index(item.data.index, offset)
           .then ->
-            { item: s._find_by_index(item.index + offset), total_count: s.total_count }
+            { item: s._find_by_index(item.data.index + offset), total_count: s.total_count }
       range: (low_id, high_id) ->
         null
       update: (item) ->
-        $http.put "./tags/#{item._id.$oid}.json", {"tag": item}
+        $http.put "./tags/#{item.data._id.$oid}.json", {"tag": item.copy}
       # private helpers
       _find_item: (id) ->
         id = null if id == "undefined"
-        return item for item in s.front_end_buffer when (not id?) or item[s.identifier] == id
+        return item for item in s.front_end_buffer when (not id?) or item.data[s.identifier] == id
       _find_by_index: (index) ->
-        return item for item in s.front_end_buffer when item.index == index
+        return item for item in s.front_end_buffer when item.data.index == index
       _reload_around_id: (id) ->
         $http.get("./tags.json?count=#{s.front_end_buffer_size}" + (if id then "&around=#{id}" else "" ))
         .then (resp) ->
@@ -73,7 +73,19 @@
         .then (resp) ->
           s._save_results(resp)
       _save_results: (resp) ->
-        s.front_end_buffer = resp.data.list
+        s.front_end_buffer = []
+        for i in resp.data.list
+          s.front_end_buffer.push
+            data: i
+            copy: angular.copy(i)
+            save: ->
+              me = this
+              s.update(me)
+              .then ->
+                me.data = angular.copy(me.copy)
+              .catch (e) ->
+                me.copy = angular.copy(me.data)
+                throw e        
         s.front_end_buffer_limit_low = resp.data.list[0][s.identifier]
         s.front_end_buffer_limit_high = resp.data.list[-1..][0][s.identifier]
         s.front_end_buffer_index_low = resp.data.list[0].index

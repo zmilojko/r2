@@ -3,13 +3,13 @@
     restrict: 'E'       # also possible attribute A and class C
     transclude: true    # set to false if ignoring content
     scope:
-      acClick: '&'     # isolate scope of a function, passed as a value 
+      #func: '&reName' # isolate scope of a function, passed as a value 
                        # of the attribute with the name of the directive
-      acValue: '='     # isolate scope of a model (both ways), passed with an 
+      acItem: '='      # isolate scope of a model (both ways), passed with an 
                        # attribute disabled="XXX", where XXX is a variable of 
                        # the scope
-      # glyph: '@other'# isolate scope of a variable (in only), passed with 
-                        # an attribute disabled="123"
+      acField: '@'     # isolate scope of a variable (in only), passed with 
+                       # an attribute disabled="123"
     controller: ($timeout, $scope) ->
       $scope.updateSuccess = false
       $scope.updateFail = false
@@ -19,7 +19,7 @@
         $scope.updateInProgress = true
         $scope.updateSuccess = false
         $scope.updateFail = false
-        $scope.acClick()
+        $scope.acItem.save()
         .then ->
           $scope.updateInProgress = false
           $scope.updateSuccess = true
@@ -34,5 +34,4 @@
           $scope.updateInProgress = false
           $scope.updateFail = true
           $scope.updateSuccess = false
-          #$scope.item = angular.copy($scope.item_orig)
     templateUrl: "auto-checkbox.html" 
