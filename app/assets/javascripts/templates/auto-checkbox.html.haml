@@ -2,6 +2,6 @@
   %label
     %input(type="checkbox" ng-model="acItem.copy[acField]" ng-click="doPerformUpdate()") 
       %span(ng-transclude)
-  %span.glyphicon.glyphicon-ok.text-success(ng-show="updateSuccess")
-  %span.glyphicon.glyphicon-refresh.text-warning(ng-show="updateInProgress")
-  %span.glyphicon.glyphicon-warning-sign.text-danger(ng-show="updateFail" title="Could not save changes. Check your connection. This might also be a server error. It is recommended you refresh the page if the problem persists.")
+      %span.glyphicon.glyphicon-ok.text-success(ng-show="updateSuccess")
+      %span.glyphicon.glyphicon-refresh.text-warning(ng-show="updateInProgress")
+      %span.glyphicon.glyphicon-warning-sign.text-danger(ng-show="updateFail" title="Could not save changes. Check your connection. This might also be a server error. It is recommended you refresh the page if the problem persists.")
