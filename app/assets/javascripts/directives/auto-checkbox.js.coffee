@@ -10,7 +10,7 @@
                        # the scope
       acField: '@'     # isolate scope of a variable (in only), passed with 
                        # an attribute disabled="123"
-    controller: ($timeout, $scope) ->
+    controller: ['$timeout', '$scope', ($timeout, $scope) ->
       $scope.updateSuccess = false
       $scope.updateFail = false
       $scope.updateInProgress = false
@@ -34,4 +34,5 @@
           $scope.updateInProgress = false
           $scope.updateFail = true
           $scope.updateSuccess = false
+    ]
     templateUrl: "auto-checkbox.html" 
