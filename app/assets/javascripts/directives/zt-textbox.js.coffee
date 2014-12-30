@@ -26,6 +26,9 @@
       $scope.revertLocal = ->
         $scope.field_value = $scope.getItem().copy[$scope.ztField]
         $scope.status = 0
+      $scope.cancelEditing = ->
+        $scope.getItem().revert()
+        $scope.revertLocal()
       $scope.completeEditing = ->
         $scope.status = 2
         ct1 = $scope.ct1 = ($scope.ct1 + 1 || 0)

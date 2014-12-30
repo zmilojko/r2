@@ -4,7 +4,7 @@
   %span.glyphicon.glyphicon-ok.text-success(ng-show="status == 1")
   .input-group(ng-show="status > 1")
     %input.form-control(ng-model="field_value" )
-    %span.input-group-addon(ng-click="revertLocal()")
+    %span.input-group-addon(ng-click="cancelEditing()")
       %span.glyphicon.glyphicon-remove
     %span.input-group-addon(ng-click="completeEditing()")
       %span.glyphicon.glyphicon-warning-sign.text-danger(ng-show="status == 4" title="Could not save changes. Click to try again.")
