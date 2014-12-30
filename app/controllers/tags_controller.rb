@@ -83,7 +83,7 @@ class TagsController < ApplicationController
 #       params[:tag].delete :name
 #       puts params[:tag]
       puts tag_params
-      sleep(3)
+      sleep(1)
       if @tag.update(tag_params)
         format.json { render json: @tag }
       else

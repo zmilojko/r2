@@ -21,8 +21,9 @@
 @zt_module.service 'ztBaseService', [
   '$http', '$q',
   ($http, $q) -> 
-    @front_end_buffer_size = 20
-    @eagerness = 3
+    @front_end_buffer_size = 200
+    @eagerness = 30
+    @page_size = 10
     # Following is the key by which sorting is done
     @front_end_buffer = null
     @front_end_buffer_limit_low = null
@@ -54,6 +55,18 @@
         @_reload_by_index(item.data.index, offset)
         .then ->
           { item: me._find_by_index(item.data.index + offset), total_count: me.total_count }
+    @page_items = (page_no, direction) ->
+      if @front_end_buffer? and @front_end_buffer_index_low <= (page_no - 1) * @page_size and page_no * @page_size<= @front_end_buffer_index_high
+        #eager loading
+        if @front_end_buffer_index_low + @eagerness > (page_no - 1) * @page_size or
+            page_no * @page_size > @front_end_buffer_index_high - @eagerness
+          @_reload_by_index((page_no - 1) * @page_size + @page_size / 2, 0)
+        $q.when { items: @_find_page_items(page_no), page_count: @_total_page_count() }
+      else
+        me = this
+        @_reload_by_index((page_no - 1) * @page_size + @page_size / 2, 0)
+        .then ->
+          { items: me._find_page_items(page_no), page_count: me._total_page_count() }
     @range = (low_id, high_id) ->
       null
     @update = (item) ->
@@ -72,6 +85,12 @@
       $http.get("./#{@resource_url}.json?count=#{@front_end_buffer_size}" + (if id? then "&around=#{id}" else "" ))
       .then (resp) ->
         me._save_results(resp)
+    @_find_page_items = (page_no) ->
+      skipped = @front_end_buffer_index_low
+      @front_end_buffer.slice (page_no - 1) * @page_size - skipped,
+        page_no * @page_size - skipped
+    @_total_page_count = () ->
+      Math.trunc((@total_count + @page_size - 1) / @page_size)
     @_reload_by_index = (index, offset) ->
       me = this
       $http.get("./#{@resource_url}.json?count=#{@front_end_buffer_size}&index=#{index}" + (if offset then "&offset=#{offset}" else "" ))

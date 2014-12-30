@@ -32,6 +32,9 @@
     when('/tags', {
       templateUrl: 'tag.html',
     }).
+    when('/tags/page/:pageNo', {
+      templateUrl: 'tagpage.html',
+    }).
     when('/tags/:tagName', {
       templateUrl: 'tag.html',
     }).

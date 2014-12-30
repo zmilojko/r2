@@ -55,3 +55,24 @@ _input.ng-dirty {
 #definition_wrap {
   overflow: auto;
 }
+
+.zt-inline>div.checkbox {
+  margin-top: 0px;
+  margin-bottom: 15px;
+}
+
+.zt-inline .input-group {
+  margin-top: -10px;
+}
+
+.zt-inline>div {
+  float: left;
+  clear: none;
+  display: inline;
+  margin-right: 6px;
+  height: 34px;
+}
+
+.zt-inline>div.checkbox {
+  min-width: 105px;
+}
