@@ -5,24 +5,22 @@
         {{error_message}}
   .row
     .col-sm-6.col-xs-12
-      .form-group
+      %div(style="height: 70px; margin-bottom: 0px;margin-top: 20px;")
         %zt-textbox(zt-field="name" zt-update-success="handleSuccessfulNameChange()")
-          %h3 Word: {{item.copy.name}}
-      .form-group
-        %zt-auto-checkbox(zt-field="do_use_as_tag") Use as tag.
-        %div
-          %button.btn.btn-md.btn-link(ng-repeat="kw in item.keywords")
-            %span {{kw.word}}
-            %span.glyphicon.glyphicon-remove
-        %div
-          %button.btn.btn-md.btn-link
-            %span Add new keyword
-            %span.glyphicon.glyphicon-plus
-      .form-group
-        %zt-auto-checkbox(zt-field="do_use_as_keyword") Use as keyword.
-        %zt-auto-checkbox(zt-field="do_use_as_product_description")
-          Use as product description (lowest prioriy usage, if no other has yielded results).
-        %zt-auto-checkbox(zt-field="do_ignore_word") Ignore.
-      .form-group
-        %button.btn.btn-default(ng-click="previousWord()" ng-disabled="item.is_first") Previous
-        %button.btn.btn-default(ng-click="nextWord()" ng-disabled="item.is_last") Next
+          %h3 {{item.data.name}}
+      -#%zt-auto-textbox(zt-field="name" zt-update-success="handleSuccessfulNameChange()")
+      %zt-auto-checkbox(zt-field="do_use_as_tag") Use as tag.
+      %div
+        %button.btn.btn-md.btn-link(ng-repeat="kw in item.keywords")
+          %span {{kw.word}}
+          %span.glyphicon.glyphicon-remove
+      %div
+        %button.btn.btn-md.btn-link
+          %span Add new keyword
+          %span.glyphicon.glyphicon-plus
+      %zt-auto-checkbox(zt-field="do_use_as_keyword") Use as keyword.
+      %zt-auto-checkbox(zt-field="do_use_as_product_description")
+        Use as product description (lowest prioriy usage, if no other has yielded results).
+      %zt-auto-checkbox(zt-field="do_ignore_word") Ignore.
+      %button.btn.btn-default(ng-click="previousWord()" ng-disabled="item.is_first") Previous
+      %button.btn.btn-default(ng-click="nextWord()" ng-disabled="item.is_last") Next

@@ -1,5 +1,5 @@
 /*
-*= require default.css
+*= require highlight_default.css
 *= require_self
 */
 @import "bootstrap-sprockets";
@@ -28,7 +28,7 @@
     cursor: pointer;
 }
 
-input.ng-dirty {
+_input.ng-dirty {
   background-color: #dca8a3;
 }
 

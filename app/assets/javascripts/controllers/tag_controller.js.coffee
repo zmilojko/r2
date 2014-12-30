@@ -4,10 +4,8 @@
     $scope.item = null
     $scope.error_message = null
     $scope.handleSuccessfulNameChange = ->
-      $timeout ->
-        $location.replace()
-        $scope.updateUrl()
-      ,2010
+      $location.replace()
+      $scope.updateUrl()
     $scope.updateUrl = ->
       $location.path("tags/#{encodeURIComponent($scope.item.data.name)}")
     $scope._rememberItem = (resp) ->

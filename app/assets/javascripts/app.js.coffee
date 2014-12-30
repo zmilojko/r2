@@ -2,6 +2,7 @@
 #= require angular-route
 #= require angular-resource
 #= require angular-rails-templates
+#= require zwr
 #= require_tree ./templates
 #= require_tree ./includes
 #= require_self
@@ -17,6 +18,7 @@
   'ui.bootstrap',
   'LocalStorageModule',
   'hljs',
+  'zt',
   ])
 
 @r2_module.config(['$routeProvider', ($routeProvider) ->

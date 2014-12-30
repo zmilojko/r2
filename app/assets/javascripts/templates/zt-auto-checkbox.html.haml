@@ -1,7 +1,9 @@
 .checkbox
-  %label
-    %input(type="checkbox" ng-model="getItem().copy[ztField]" ng-click="doPerformUpdate()") 
+  .form-group.has-feedback(ng-class="{'has-warning': status === 1, 'has-success': status === 2, 'has-error': status === 3}")
+    %label
+      %input(type="checkbox" ng-model="getItem().copy[ztField]" ng-click="doPerformUpdate()" ng-class="{'has-warning': status === 1, 'has-success': status === 2}") 
       %span(ng-transclude)
-      %span.glyphicon.glyphicon-ok.text-success(ng-show="updateSuccess")
-      %span.glyphicon.glyphicon-refresh.text-warning(ng-show="updateInProgress")
-      %span.glyphicon.glyphicon-warning-sign.text-danger(ng-show="updateFail" title="Could not save changes. Check your connection. This might also be a server error. It is recommended you refresh the page if the problem persists.")
+      %i.glyphicon.glyphicon-ok.text-success(ng-show="status === 2")
+      %i.glyphicon.glyphicon-refresh.text-warning(ng-show="status === 1")
+      %i.glyphicon.glyphicon-warning-sign.text-danger(ng-show="status === 3" title="Could not save changes. Click icon to try again."  ng-click="getItem().copy[ztField] = !getItem().copy[ztField]")
+  

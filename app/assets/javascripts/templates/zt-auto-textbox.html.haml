@@ -1,0 +1,5 @@
+.form-group.has-feedback(ng-class="{'has-warning': status === 1 || status === 2, 'has-success': status === 3, 'has-error': status === 4}")
+  %label.control-label Tag name
+  %input.form-control(type="text" placeholder="New tag" ng-model="getItem().copy[ztField]" ng-change="inputTextChange()")
+  %i.form-control-feedback.glyphicon.glyphicon-warning-sign.text-danger(ng-show="status === 4" title="Could not save changes. Click error icon to retry!" ng-click="completeEditing()")
+  %i.form-control-feedback.glyphicon(ng-show="status === 3 || status === 2" ng-class="{'text-success': status === 3, 'glyphicon-refresh': status === 2, 'text-warning': status === 2, 'glyphicon-ok': status === 3}")

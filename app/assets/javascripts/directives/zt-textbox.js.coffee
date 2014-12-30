@@ -1,54 +1,49 @@
-@r2_module.directive 'ztTextbox', ->
+@zt_module.directive 'ztTextbox', ->
   directive_object =
-    restrict: 'E'       # also possible attribute A and class C
-    transclude: true    # set to false if ignoring content
+    restrict: 'E'
+    transclude: true
     scope:
       ztItem: '=?'
       ztField: '@'
       ztUpdateSuccess: '&?'
+    link: (scope, elem, attr) ->
+      if scope.acItem
+        scope.$watch (scope) ->
+          scope.acItem
+        , ->
+          scope.revertLocal() if acItem.item
+      else
+        scope.$parent.$watch (parent_scope) ->
+          parent_scope.item
+        , ->
+          scope.revertLocal() if scope.$parent.item
     controller: ['$timeout', '$scope', ($timeout, $scope) ->
-      $scope.editingWord = false
-      $scope.updateInProgress = false
-      $scope.updateSuccess = false
-      $scope.updateFail = false
-      $scope.randomCounter = 0
-      $scope.randomCounter2 = 0
+      $scope.status = 0
       $scope.getItem = ->
         $scope.acItem or $scope.$parent.item
       $scope.startEditing = ->
-        $scope.editingWord = true
-      $scope.cancelEditing = ->
-        $scope.getItem().revert()
-        $scope.editingWord = false
-        $scope.updateInProgress = false
-        $scope.updateSuccess = false
-        $scope.updateFail = false
+        $scope.status = 3 if $scope.status == 0
+      $scope.revertLocal = ->
+        $scope.field_value = $scope.getItem().copy[$scope.ztField]
+        $scope.status = 0
       $scope.completeEditing = ->
-        $scope.updateInProgress = true
-        $scope.updateSuccess = false
-        $scope.updateFail = false
-        $scope.randomCounter2++
-        randomCounter2 = $scope.randomCounter2
+        $scope.status = 2
+        ct1 = $scope.ct1 = ($scope.ct1 + 1 || 0)
+        $scope.getItem().copy[$scope.ztField] = $scope.field_value
         $scope.getItem().save()
         .then ->
-          if randomCounter2 == $scope.randomCounter2
-            $scope.form.$setPristine()
-            $scope.updateInProgress = false
-            $scope.updateSuccess = true
-            $scope.updateFail = false
-            $scope.randomCounter++
-            randomCounter = $scope.randomCounter
-            $scope.editingWord = false
-            if $scope.ztUpdateSuccess?
-              $scope.ztUpdateSuccess()
+          if ct1 == $scope.ct1 and $scope.status == 2
+            $scope.status = 1
+            ct2 = $scope.ct2 = ($scope.ct2 + 1 || 0)
             $timeout ->
-              if randomCounter == $scope.randomCounter
-                $scope.updateSuccess = false
+              if ct2 == $scope.ct2 and $scope.status == 1
+                if $scope.ztUpdateSuccess?
+                  $scope.ztUpdateSuccess()
+                $scope.status = 0
             ,2000
         .catch ->
-          $scope.updateInProgress = false
-          $scope.updateFail = true
-          $scope.updateSuccess = false
+          $scope.status = 4
+    
     ]
     templateUrl: "zt-textbox.html" 
 

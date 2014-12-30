@@ -1,45 +1,28 @@
-@r2_module.directive 'ztAutoCheckbox', ->
+@zt_module.directive 'ztAutoCheckbox', ->
   directive_object =
-    restrict: 'E'       # also possible attribute A and class C
-    transclude: true    # set to false if ignoring content
+    restrict: 'E'
+    transclude: true
     scope:
-      #func: '&reName' # isolate scope of a function, passed as a value 
-                       # of the attribute with the name of the directive
-      ztItem: '=?'      # isolate scope of a model (both ways), passed with an 
-                       # attribute disabled="XXX", where XXX is a variable of 
-                       # the scope
-      ztField: '@'     # isolate scope of a variable (in only), passed with 
-                       # an attribute disabled="123"
+      ztItem: '=?'
+      ztField: '@'
     controller: ['$timeout', '$scope', ($timeout, $scope) ->
-      $scope.updateSuccess = false
-      $scope.updateFail = false
-      $scope.updateInProgress = false
-      $scope.randomCounter = 0
-      $scope.randomCounter2 = 0
+      $scope.status = 0
       $scope.getItem = ->
         $scope.ztItem or $scope.$parent.item
       $scope.doPerformUpdate = ->
-        $scope.updateInProgress = true
-        $scope.updateSuccess = false
-        $scope.updateFail = false
-        $scope.randomCounter2++
-        randomCounter2 = $scope.randomCounter2
+        $scope.status = 1
+        ct1 = $scope.ct1 = ($scope.ct1 + 1 || 0)
         $scope.getItem().save()
         .then ->
-          if randomCounter2 == $scope.randomCounter2
-            $scope.updateInProgress = false
-            $scope.updateSuccess = true
-            $scope.updateFail = false
-            $scope.randomCounter++
-            randomCounter = $scope.randomCounter
+          if ct1 == $scope.ct1 and $scope.status = 1
+            $scope.status = 2
+            ct2 = $scope.ct2 = ($scope.ct2 + 1 || 0)
             $timeout ->
-              if randomCounter == $scope.randomCounter
-                $scope.updateSuccess = false
+              if ct2 == $scope.ct2 and $scope.status == 2
+                $scope.status = 0
             ,2000
         .catch ->
           $scope.getItem().revert()
-          $scope.updateInProgress = false
-          $scope.updateFail = true
-          $scope.updateSuccess = false
+          $scope.status = 3
     ]
     templateUrl: "zt-auto-checkbox.html" 
