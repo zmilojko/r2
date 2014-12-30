@@ -7,11 +7,11 @@
       ztField: '@'
       ztUpdateSuccess: '&?'
     link: (scope, elem, attr) ->
-      if scope.acItem
+      unless typeof scope.ztItem == "undefined"
         scope.$watch (scope) ->
-          scope.acItem
+          scope.ztItem
         , ->
-          scope.revertLocal() if acItem.item
+          scope.revertLocal() if scope.ztItem
       else
         scope.$parent.$watch (parent_scope) ->
           parent_scope.item
@@ -20,7 +20,7 @@
     controller: ['$timeout', '$scope', ($timeout, $scope) ->
       $scope.status = 0
       $scope.getItem = ->
-        $scope.acItem or $scope.$parent.item
+        $scope.ztItem or $scope.$parent.item
       $scope.startEditing = ->
         $scope.status = 3 if $scope.status == 0
       $scope.revertLocal = ->
