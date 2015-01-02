@@ -16,6 +16,8 @@ class BestsellerCom < Harvester
       end
     end
     
+    return false unless url.downcase.include?("bc-kids-sale") or referral.downcase.include?("bc-kids-sale")
+    
     # http://bestseller.com/on/demandware.store/Sites-ROE-Site/en_GB/Search-Show?redirected=1&cgid=bc-kids-sale&forcecountry=FI&forcebrand=bestseller-com#/Storefront-Catalog---EN/root,en_GB,sc.html?prefn1=category-id&prefv1=ni-newborn-restsalg%7Cni-mini-restsalg%7Cni-kids-restsalg%7Cpc-greatoffers-little&prefn2=product-type-code&prefv2=0%7C1%7C4&prefn3=scopeFilter&prefv3=default&srule=bc-new-arrivals&start=96&sz=12&renderascategory=bc-kids-sale
     # must replace "start=96" with start=24, basically no matter what, reduce 72
     
