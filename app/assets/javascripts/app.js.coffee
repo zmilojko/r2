@@ -44,6 +44,9 @@
     when('/tagform/:tagName?', {
       templateUrl: 'tagform.html',
     }).
+    when('/tagform/page/:pageNo', {
+      templateUrl: 'tagformpage.html',
+    }).
     otherwise({
       templateUrl: '404.html',
     }) 

@@ -5,10 +5,10 @@
         {{error_message}}
   .row
     .col-sm-6.col-xs-12
-      %div(style="height: 70px; margin-bottom: 0px;margin-top: 20px;")
+      -#%div(style="height: 70px; margin-bottom: 0px;margin-top: 20px;")
         %zt-textbox(zt-field="name" zt-update-success="handleSuccessfulNameChange()")
           %h3 {{item.data.name}}
-      -#%zt-auto-textbox(zt-field="name" zt-update-success="handleSuccessfulNameChange()")
+      %zt-auto-textbox(zt-field="name" zt-update-success="handleSuccessfulNameChange()")
       %zt-auto-checkbox(zt-field="do_use_as_tag") Use as tag.
       %div
         %button.btn.btn-md.btn-link(ng-repeat="kw in item.keywords")

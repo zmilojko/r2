@@ -1,10 +1,12 @@
 .form-group.has-feedback()
-  %label( ng-class="{'text-success': fieldUpdated()}")
+  %label(ng-if="isDefined(ztLabel)" ng-class="{'text-success': fieldUpdated()}")
     {{ztLabel}}:
+  .input-wrapper
+    .input-group(ng-show="form.editable"ng-class="{'has-warning': fieldModified(), 'has-error': fieldError()}")
+      %input.form-control(ng-model="form.getItem().copy[ztField]" )
+      %span.input-group-addon
+        %i.glyphicon(ng-class="{'glyphicon-remove': !fieldError() && !fieldUpdating(),'glyphicon-refresh': fieldUpdating(), 'text-warning': fieldUpdating(), 'glyphicon-warning-sign': fieldError()}" ng-click="revertLocal()" title="{{glyphTitle()}}")
   %span(ng-hide="form.editable")
     {{form.getItem().copy[ztField]}}
-    %i.glyphicon.glyphicon-ok.text-success(ng-show="fieldUpdated()")
-  .input-group(ng-show="form.editable"ng-class="{'has-warning': fieldModified(), 'has-error': fieldError()}")
-    %input.form-control(ng-model="form.getItem().copy[ztField]" )
-    %span.input-group-addon
-      %i.glyphicon(ng-class="{'glyphicon-remove': !fieldError() && !fieldUpdating(),'glyphicon-refresh': fieldUpdating(), 'text-warning': fieldUpdating(), 'glyphicon-warning-sign': fieldError()}" ng-click="revertLocal()" title="{{glyphTitle()}}")
+    %i.glyphicon.glyphicon-saved.text-success(ng-show="fieldUpdated()")
+

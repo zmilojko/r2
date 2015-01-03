@@ -4,9 +4,10 @@
     transclude: true    # set to false if ignoring content
     scope:
       ztItem: '=?'
-    link: (scope, elem, attrs) ->
+    link: (scope, elem, attrs, ctrl, transclude) ->
       scope.lockable = isDefined(attrs.lockable)
       scope.editable = !scope.lockable
+      # elem.replaceWith(transclude());
     controller: ($scope) ->
       $scope.isZtfForm = true
       $scope.updated_fields = []

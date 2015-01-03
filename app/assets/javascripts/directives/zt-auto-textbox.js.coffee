@@ -17,6 +17,7 @@
           parent_scope.item
         , ->
           scope.revertLocal() if scope.$parent.item
+      scope.label_visible = (elem.attr('class').indexOf('zt-inline') == -1)
     controller: ['$timeout', '$scope', ($timeout, $scope) ->
       $scope.status = 0
       $scope.getItem = ->

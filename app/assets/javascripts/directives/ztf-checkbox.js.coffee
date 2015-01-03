@@ -11,7 +11,7 @@
       $scope.revertLocal = ->
         $scope.form.getItem().copy[$scope.ztField] = $scope.form.getItem().data[$scope.ztField] unless $scope.fieldUpdating()
       $scope.fieldModified = ->
-        $scope.form.updating and $scope.form.getItem().copy[$scope.ztField] != $scope.form.getItem().data[$scope.ztField]
+        $scope.form.getItem() and $scope.form.getItem().copy[$scope.ztField] != $scope.form.getItem().data[$scope.ztField]
       $scope.fieldUpdating = ->
         $scope.form.updating and $scope.form.updated_fields.indexOf($scope.ztField) > -1
       $scope.fieldError = ->

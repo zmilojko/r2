@@ -65,12 +65,13 @@ _input.ng-dirty {
   margin-top: -10px;
 }
 
-.zt-inline>div {
+.zt-inline>div, .zt-inline label, .zt-inline div.input-wrapper {
   float: left;
   clear: none;
   display: inline;
-  margin-right: 6px;
-  height: 34px;
+  //margin-right: 6px;
+  //height: 34px;
+  min-height: 26px;
 }
 
 .zt-inline>div.checkbox {
@@ -79,4 +80,18 @@ _input.ng-dirty {
 
 ztf-button>.btn {
   margin: 10px 0px;
+}
+.zt-inline>.btn {
+  margin: -10px 0px;
+}
+.zt.inline>.input-group {
+  
+}
+
+.zt-inline .zt-label{
+  display: none;
+}
+
+ztf-textbox:not(.zt-inline)>div{
+  min-height: 34px;
 }

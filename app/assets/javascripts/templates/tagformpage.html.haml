@@ -1,0 +1,32 @@
+%div(ng-controller="TagFormPageController")
+  .row
+    .col-xs-12
+      .alert.alert-danger(role="alert" ng-if="error_message")
+        {{error_message}}
+  .row
+    .col-xs-12
+      .row(style="padding-bottom: 10px;")
+        .col-sm-4.col-xs-12
+          %strong Name
+        .col-sm-4.col-xs-12 
+          %strong Use the word as:
+      .row(ng-repeat="item in page_items")
+        %ztf-form(lockable)
+          .col-sm-4.col-xs-12
+            %ztf-textbox.zt-inline(zt-field="name")
+          .col-sm-1
+            %ztf-checkbox.zt-inline(zt-field="do_use_as_tag") tag
+          .col-sm-1
+            %ztf-checkbox.zt-inline(zt-field="do_use_as_keyword") keyword
+          .col-sm-1
+            %ztf-checkbox.zt-inline(zt-field="do_use_as_product_description") desc.
+          .col-sm-1
+            %ztf-checkbox.zt-inline(zt-field="do_ignore_word") ignore
+          .col-sm-4
+            %ztf-button.zt-inline(edit zt-hide) Lock
+            %ztf-button.zt-inline(commit zt-hide) Save
+            %ztf-button.zt-inline(cancel zt-hide)
+  .row
+    .col-xs-12
+      %button.btn.btn-default(ng-click="prevPage()" ng-disabled="is_first_page()") <
+      %button.btn.btn-default(ng-click="nextPage()" ng-disabled="is_last_page()") >

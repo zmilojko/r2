@@ -7,8 +7,8 @@
     .col-xs-12
       .row(ng-repeat="item in page_items")
         .col-sm-4.col-xs-12
-          %zt-textbox.zt-inline(zt-field="name" zt-update-success="handleSuccessfulNameChange()") {{item.data.name}}
-          -#%zt-auto-textbox(zt-field="name" zt-update-success="handleSuccessfulNameChange()")
+          -#%zt-textbox.zt-inline(zt-field="name" zt-update-success="handleSuccessfulNameChange()") {{item.data.name}}
+          %zt-auto-textbox.zt-inline(zt-field="name" zt-update-success="handleSuccessfulNameChange()")
         .col-sm-8.col-sm-offset-0.col-xs-11.col-xs-offset-1
           %zt-auto-checkbox.zt-inline(zt-field="do_use_as_tag") tag
           %zt-auto-checkbox.zt-inline(zt-field="do_use_as_keyword") keyword
