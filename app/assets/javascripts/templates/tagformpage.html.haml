@@ -6,26 +6,28 @@
   .row
     .col-xs-12
       .row(style="padding-bottom: 10px;")
-        .col-sm-4.col-xs-12
+        .col-xs-3.col-sm-4
           %strong Name
-        .col-sm-4.col-xs-12 
+        .col-xs-9.col-sm-8
           %strong Use the word as:
       .row(ng-repeat="item in page_items")
         %ztf-form(lockable)
           .col-sm-4.col-xs-12
             %ztf-textbox.zt-inline(zt-field="name")
-          .col-sm-1
-            %ztf-checkbox.zt-inline(zt-field="do_use_as_tag") tag
-          .col-sm-1
-            %ztf-checkbox.zt-inline(zt-field="do_use_as_keyword") keyword
-          .col-sm-1
-            %ztf-checkbox.zt-inline(zt-field="do_use_as_product_description") desc.
-          .col-sm-1
-            %ztf-checkbox.zt-inline(zt-field="do_ignore_word") ignore
-          .col-sm-4
-            %ztf-button.zt-inline(edit zt-hide) Lock
-            %ztf-button.zt-inline(commit zt-hide) Save
-            %ztf-button.zt-inline(cancel zt-hide)
+          .col-xs-8.col-sm-6.col-xs-offset-2.col-sm-offset-0
+            .row
+              .col-xs-3
+                %ztf-checkbox.zt-inline(zt-field="do_use_as_tag") tag
+              .col-xs-3
+                %ztf-checkbox.zt-inline(zt-field="do_use_as_keyword") keyword
+              .col-xs-3
+                %ztf-checkbox.zt-inline(zt-field="do_use_as_product_description") desc.
+              .col-xs-3
+                %ztf-checkbox.zt-inline(zt-field="do_ignore_word") ignore
+          .col-xs-2
+            %ztf-button.zt-inline(edit zt-hide zt-icon) Lock
+            %ztf-button.zt-inline(commit zt-hide zt-icon) Save
+            %ztf-button.zt-inline(cancel zt-hide zt-icon)
   .row
     .col-xs-12
       %button.btn.btn-default(ng-click="prevPage()" ng-disabled="is_first_page()") <

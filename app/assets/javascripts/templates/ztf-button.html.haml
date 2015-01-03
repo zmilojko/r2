@@ -1,3 +1,4 @@
-%button.ztf-button.btn.btn-default(ng-click="form[action]()" ng-disabled="!form.enable_button(action)")
-  %span(ng-transclude)
-  %span(ng-if="!title_given") {{action.capitalize()}}
+%button.ztf-button.btn.btn-default(ng-click="form[action]()" ng-disabled="!form.enable_button(action)" ng-hide="hideMe()")
+  %span(ng-if="!useIcon"ng-transclude)
+  %span(ng-if="!title_given && !useIcon") {{action.capitalize()}}
+  %i.glyphicon(ng-if="useIcon" ng-class="iconClass")
