@@ -29,13 +29,10 @@
     when('/sites/:siteName', {
       templateUrl: 'site.html',
     }).
-    when('/tags', {
-      templateUrl: 'tag.html',
-    }).
     when('/tags/page/:pageNo', {
       templateUrl: 'tagpage.html',
     }).
-    when('/tags/:tagName', {
+    when('/tags/:tagName?', {
       templateUrl: 'tag.html',
     }).
     when('/404', {
