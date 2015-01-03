@@ -1,27 +1,26 @@
-@zt_module.directive 'ztfTextbox', ['$timeout', ($timeout) ->
+@zt_module.directive 'ztfTextbox', ->
   ret =
     restrict: 'E'
     transclude: false
     scope:
       ztField: '@'
+      ztLabel: '@'
     link: (scope, elem, attr) ->
       s while !(s = (s || scope).$parent).isZtfForm
       scope.form = s 
-      unless typeof scope.ztItem == "undefined"
-        scope.$watch (scope) ->
-          scope.ztItem
-        , ->
-          scope.revertLocal() if scope.ztItem
-      else
-        scope.$parent.$watch (parent_scope) ->
-          parent_scope.item
-        , ->
-          scope.revertLocal() if scope.$parent.item
     controller: ($scope) ->
-      $scope.startEditing = ->
-        $scope.status = 3 if $scope.status == 0
       $scope.revertLocal = ->
-        $scope.field_value = $scope.getItem().copy[$scope.ztField]
-        $scope.status = 0
+        $scope.form.getItem().copy[$scope.ztField] = $scope.form.getItem().data[$scope.ztField] unless $scope.fieldUpdating()
+      $scope.fieldModified = ->
+        $scope.form.getItem() and $scope.form.getItem().copy[$scope.ztField] != $scope.form.getItem().data[$scope.ztField]
+      $scope.fieldUpdating = ->
+        $scope.form.updating and $scope.form.updated_fields.indexOf($scope.ztField) > -1
+      $scope.fieldError = ->
+        $scope.form.error_fields.indexOf($scope.ztField) > -1 and $scope.fieldModified()
+      $scope.fieldUpdated = ->
+        $scope.form.updated_fields.indexOf($scope.ztField) > -1
+      $scope.glyphTitle = ->
+        if $scope.form and $scope.form.getItem() and $scope.fieldError()
+          "Could not save changes. Click to revert."
     templateUrl: "ztf-textbox.html"
-  ]
+ 

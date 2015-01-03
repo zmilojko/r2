@@ -1,10 +1,10 @@
 .form-group.has-feedback()
+  %label( ng-class="{'text-success': fieldUpdated()}")
+    {{ztLabel}}:
   %span(ng-hide="form.editable")
-    {{form.copy[ztField]}}
-  .input-group(ng-show="form.editable")
-    %input.form-control(ng-model="field_value" )
-    %span.input-group-addon(ng-click="revertLocal()")
-      %span.glyphicon.glyphicon-remove
-      %span.glyphicon.glyphicon-warning-sign.text-danger(ng-show="status == 4" title="Could not save changes. Click to try again.")
-      %span.glyphicon.glyphicon-ok
-
+    {{form.getItem().copy[ztField]}}
+    %i.glyphicon.glyphicon-ok.text-success(ng-show="fieldUpdated()")
+  .input-group(ng-show="form.editable"ng-class="{'has-warning': fieldModified(), 'has-error': fieldError()}")
+    %input.form-control(ng-model="form.getItem().copy[ztField]" )
+    %span.input-group-addon
+      %i.glyphicon(ng-class="{'glyphicon-remove': !fieldError() && !fieldUpdating(),'glyphicon-refresh': fieldUpdating(), 'text-warning': fieldUpdating(), 'glyphicon-warning-sign': fieldError()}" ng-click="revertLocal()" title="{{glyphTitle()}}")
