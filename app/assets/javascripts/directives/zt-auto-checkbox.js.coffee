@@ -1,11 +1,11 @@
-@zt_module.directive 'ztAutoCheckbox', ->
+@zt_module.directive 'ztAutoCheckbox', ['$timeout', ($timeout) ->
   directive_object =
     restrict: 'E'
     transclude: true
     scope:
       ztItem: '=?'
       ztField: '@'
-    controller: ['$timeout', '$scope', ($timeout, $scope) ->
+    controller: ($scope) ->
       $scope.status = 0
       $scope.getItem = ->
         $scope.ztItem or $scope.$parent.item
@@ -24,5 +24,5 @@
         .catch ->
           $scope.getItem().revert()
           $scope.status = 3
-    ]
     templateUrl: "zt-auto-checkbox.html" 
+]

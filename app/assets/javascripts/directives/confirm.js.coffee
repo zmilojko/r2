@@ -1,4 +1,4 @@
-@r2_module.directive 'ngConfirmClick', ->
+@zt_module.directive 'ngConfirmClick', ->
   directive_object =
     link: (scope, element, attr) ->
       msg = attr.ngConfirmClick || "Are you sure?";

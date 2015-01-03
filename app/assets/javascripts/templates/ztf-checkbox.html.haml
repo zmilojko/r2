@@ -1,0 +1,8 @@
+.ztf-checkbox.checkbox
+  %label(ng-class="{'text-success': status === 2, 'text-warning': status === 1, 'text-danger': status === 3}")
+    %input(type="checkbox")
+    %span(ng-transclude)
+    %i.glyphicon.glyphicon-ok.text-success(ng-show="status === 2")
+    %i.glyphicon.glyphicon-refresh.text-warning(ng-show="status === 1")
+    %i.glyphicon.glyphicon-warning-sign.text-danger(ng-show="status === 3" title="Could not save changes. Click icon to try again."  ng-click="getItem().copy[ztField] = !getItem().copy[ztField]")
+  

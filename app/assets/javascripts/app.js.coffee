@@ -41,6 +41,9 @@
     when('/', {
       templateUrl: 'home.html',
     }).
+    when('/tagform/:tagName?', {
+      templateUrl: 'tagform.html',
+    }).
     otherwise({
       templateUrl: '404.html',
     }) 
