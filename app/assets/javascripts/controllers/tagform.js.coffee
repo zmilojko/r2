@@ -15,6 +15,11 @@
     $scope.nextWord = ->
       wordService.item_relative($scope.item, +1)
       .then($scope._rememberItem,$scope._errorHandler)
+    $scope.handleSuccessfulNameChange = ->
+      $location.replace()
+      $scope.updateUrl()
+    $scope.updateUrl = ->
+      $location.path("tagform/#{encodeURIComponent($scope.item.copy.name)}")
     if $routeParams.tagName == "new"
       wordService.newitem()
       .then($scope._rememberItem,$scope._errorHandler)

@@ -4,9 +4,10 @@
     transclude: true    # set to false if ignoring content
     scope:
       ztItem: '=?'
+      ztUpdateSuccess: '&?'
     link: (scope, elem, attrs, ctrl, transclude) ->
       scope.lockable = isDefined(attrs.lockable)
-      scope.editable = scope.getItem().clientOnly || !scope.lockable
+      scope.editable = (scope.getItem() and scope.getItem().clientOnly) || !scope.lockable
     controller: ($scope) ->
       $scope.isZtfForm = true
       $scope.isZtfSubform = false
@@ -26,6 +27,8 @@
             $scope.editable = false
           $timeout ->
             $scope.updated_fields = []
+            if $scope.ztUpdateSuccess?
+              $scope.ztUpdateSuccess()
           ,2000
         .catch ->
           $scope.updating = false

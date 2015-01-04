@@ -5,7 +5,7 @@
         {{error_message}}
   .row
     .col-sm-6.col-xs-12
-      %ztf-form(lockable)
+      %ztf-form(lockable zt-update-success="handleSuccessfulNameChange()")
         %ztf-textbox(zt-field="name" zt-label="name") Name
         %ztf-checkbox(zt-field="do_use_as_tag") Use as tag.
         %ztf-subform(zt-field="keywords" zt-add zt-delete zt-inline zt-title="Alternative keywords:" ng-if="item.copy.do_use_as_tag")
