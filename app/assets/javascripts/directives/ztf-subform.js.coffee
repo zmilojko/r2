@@ -56,7 +56,10 @@
         throw "Subform passed a null index, which is only allowed on top level forms" if index == null
         $scope.superItem().copy[$scope.ztField][index][ztSubField] = $scope.fieldValue(ztSubField, index, true) unless $scope.fieldUpdating(ztSubField, index) or not $scope.fieldValue(ztSubField, index, true)
       $scope.fieldModified = (ztSubField, index) ->
-        $scope.superItem() and $scope.fieldValue(ztSubField, index, false) != $scope.fieldValue(ztSubField, index, true)
+        $scope.superItem() and if $scope.superItem().clientOnly
+          $scope.fieldValue(ztSubField, index, false)
+        else
+          $scope.fieldValue(ztSubField, index, false) != $scope.fieldValue(ztSubField, index, true)
       $scope.fieldUpdating = (ztSubField, index) ->
         $scope.form.updating and $scope.fieldUpdated(ztSubField, index)
       $scope.fieldError = (ztSubField, index) ->

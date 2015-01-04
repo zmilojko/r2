@@ -6,7 +6,7 @@
       ztItem: '=?'
     link: (scope, elem, attrs, ctrl, transclude) ->
       scope.lockable = isDefined(attrs.lockable)
-      scope.editable = !scope.lockable
+      scope.editable = scope.getItem().clientOnly || !scope.lockable
     controller: ($scope) ->
       $scope.isZtfForm = true
       $scope.isZtfSubform = false
@@ -54,7 +54,10 @@
       $scope.revertField = (ztField, index) ->
         $scope.getItem().copy[ztField] = $scope.getItem().data[ztField] unless $scope.fieldUpdating(ztField, index)
       $scope.fieldModified = (ztField, index) ->
-        $scope.getItem() and $scope.getItem().copy[ztField] != $scope.getItem().data[ztField]
+        $scope.getItem() and if $scope.getItem().clientOnly
+          $scope.getItem().copy[ztField]
+        else
+          $scope.getItem().copy[ztField] != $scope.getItem().data[ztField]
       $scope.fieldUpdating = (ztField, index) ->
         $scope.updating and $scope.updated_fields.indexOf(ztField) > -1
       $scope.fieldError = (ztField, index) ->

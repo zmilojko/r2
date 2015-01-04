@@ -73,6 +73,32 @@
       data = new Object()
       data[@resource_name] = item.copy
       $http.put "./#{@resource_url}/#{item.data._id.$oid}.json", data
+    @create = (item) ->
+      data = new Object()
+      data[@resource_name] = item.copy
+      $http.post "./#{@resource_url}.json", data
+    @newitem = ->
+      container = this
+      newly_created_item =
+        data: null
+        copy: {}
+        clientOnly: true
+        saved: false
+        save: ->
+          me = this
+          container.create(me)
+          .then ->
+            me.saved = true
+        revert: ->
+          throw "Cannot call revert on new object"
+        is_first: true
+        is_last: true
+      mynewitem =
+        item:
+          newly_created_item
+      if isDefined(@initialize_new_object)
+        @initialize_new_object(mynewitem.item.copy)
+      $q.when mynewitem
     # private helpers
     @_find_item = (id) ->
       id = null if id == "undefined"
