@@ -3,10 +3,10 @@
     {{ztLabel}}:
   .input-wrapper
     .input-group(ng-show="form.editable"ng-class="{'has-warning': fieldModified(), 'has-error': fieldError()}")
-      %input.form-control(ng-model="form.getItem().copy[ztField]" )
+      %input.form-control(ng-model="itemCopy()[ztField]" )
       %span.input-group-addon
         %i.glyphicon(ng-class="{'glyphicon-remove': !fieldError() && !fieldUpdating(),'glyphicon-refresh': fieldUpdating(), 'text-warning': fieldUpdating(), 'glyphicon-warning-sign': fieldError()}" ng-click="revertLocal()" title="{{glyphTitle()}}")
   %span(ng-hide="form.editable")
-    {{form.getItem().copy[ztField]}}
+    {{itemCopy()[ztField]}}
     %i.glyphicon.glyphicon-saved.text-success(ng-show="fieldUpdated()")
 

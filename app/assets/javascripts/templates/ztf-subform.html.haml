@@ -1,0 +1,6 @@
+.ztf-subitems
+  %h4(ng-if="ztTitle") {{ztTitle}}
+  .ztf-subitem(ng-repeat="item in subitems()")
+    %span(ng-transclude)
+    %ztf-button(delete ng-if="canDelete") Delete
+  %ztf-button(add ng-if="canAdd") New

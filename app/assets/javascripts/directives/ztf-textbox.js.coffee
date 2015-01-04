@@ -6,21 +6,31 @@
       ztField: '@'
       ztLabel: '@'
     link: (scope, elem, attr) ->
-      s while !(s = (s || scope).$parent).isZtfForm
-      scope.form = s 
+      s while !(s = (s || scope).$parent).hasOwnProperty('isZtfForm')
+      scope.form = s
+      scope.index = if isDefined(scope.$parent.$parent.$index) then scope.$parent.$parent.$index else null
     controller: ($scope) ->
+      $scope.itemCopy = ->
+        $scope.form.itemCopy($scope.ztField, $scope.index)
+      #$scope.item = ->
+      #  $scope.form.getItem($scope.index)
       $scope.revertLocal = ->
-        $scope.form.getItem().copy[$scope.ztField] = $scope.form.getItem().data[$scope.ztField] unless $scope.fieldUpdating()
+        $scope.form.revertField($scope.ztField, $scope.index)
+        #$scope.item().copy[$scope.ztField] = $scope.item().data[$scope.ztField] unless $scope.fieldUpdating()
       $scope.fieldModified = ->
-        $scope.form.getItem() and $scope.form.getItem().copy[$scope.ztField] != $scope.form.getItem().data[$scope.ztField]
+        $scope.form.fieldModified($scope.ztField, $scope.index)
+        #$scope.item() and $scope.item().copy[$scope.ztField] != $scope.item().data[$scope.ztField]
       $scope.fieldUpdating = ->
-        $scope.form.updating and $scope.form.updated_fields.indexOf($scope.ztField) > -1
+        $scope.form.fieldUpdating($scope.ztField, $scope.index)
+        #$scope.form.updating and $scope.form.updated_fields.indexOf($scope.ztField) > -1
       $scope.fieldError = ->
-        $scope.form.error_fields.indexOf($scope.ztField) > -1 and $scope.fieldModified()
+        $scope.form.fieldError($scope.ztField, $scope.index)
+        #$scope.form.error_fields.indexOf($scope.ztField) > -1 and $scope.fieldModified()
       $scope.fieldUpdated = ->
-        $scope.form.updated_fields.indexOf($scope.ztField) > -1
+        $scope.form.fieldUpdated($scope.ztField, $scope.index)
+        #$scope.form.updated_fields.indexOf($scope.ztField) > -1
       $scope.glyphTitle = ->
-        if $scope.form and $scope.form.getItem() and $scope.fieldError()
+        if $scope.form and $scope.itemCopy() and $scope.fieldError()
           "Could not save changes. Click to revert."
     templateUrl: "ztf-textbox.html"
  

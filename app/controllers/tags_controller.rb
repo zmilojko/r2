@@ -27,7 +27,7 @@ class TagsController < ApplicationController
     start = [index + offset - count / 2, 0].max
     tags_list = Tag.order_by(name: :asc)
       .limit(count)
-      .offset(start).as_json
+      .offset(start).map{|x| x.full_json}
     total_count = Tag.count
     
     respond_to do |format|

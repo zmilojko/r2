@@ -5,7 +5,7 @@
     scope:
       ztField: '@'
     link: (scope, elem, attr) ->
-      s while !(s = (s || scope).$parent).isZtfForm
+      s while !(s = (s || scope).$parent).hasOwnProperty('isZtfForm')
       scope.form = s 
     controller: ($scope) ->
       $scope.revertLocal = ->

@@ -16,6 +16,8 @@
       scope.action = 'commit' if isDefined(attrs.commit)
       scope.action = 'cancel' if isDefined(attrs.cancel)
       scope.action = 'edit' if isDefined(attrs.edit)
+      scope.action = 'add' if isDefined(attrs.add)
+      scope.action = 'delete' if isDefined(attrs.delete)
       scope.action = attrs.action if isDefined(attrs.action)
       scope.title_given = elem.find('span').length && elem.find('span')[0].children.length;
       if isDefined(elem.attr('zt-icon'))

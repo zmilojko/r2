@@ -55,4 +55,10 @@ class Tag
     end
     Tag.all.count
   end
+  
+  def full_json
+    hash = self.as_json
+    hash['keywords'] = [] unless hash['keywords']
+    hash
+  end
 end

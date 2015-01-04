@@ -7,9 +7,9 @@
     link: (scope, elem, attrs, ctrl, transclude) ->
       scope.lockable = isDefined(attrs.lockable)
       scope.editable = !scope.lockable
-      # elem.replaceWith(transclude());
     controller: ($scope) ->
       $scope.isZtfForm = true
+      $scope.isZtfSubform = false
       $scope.updated_fields = []
       $scope.error_fields = []
       $scope.getItem = ->
@@ -48,5 +48,18 @@
           return $scope.editable
         else if action == 'edit'
           return !$scope.editable
+      $scope.itemCopy = (ztField, index) ->
+        throw "Form passed an index other than null, which is only allowed on subforms" if index
+        if $scope.getItem() then $scope.getItem().copy else null
+      $scope.revertField = (ztField, index) ->
+        $scope.getItem().copy[ztField] = $scope.getItem().data[ztField] unless $scope.fieldUpdating(ztField, index)
+      $scope.fieldModified = (ztField, index) ->
+        $scope.getItem() and $scope.getItem().copy[ztField] != $scope.getItem().data[ztField]
+      $scope.fieldUpdating = (ztField, index) ->
+        $scope.updating and $scope.updated_fields.indexOf(ztField) > -1
+      $scope.fieldError = (ztField, index) ->
+        $scope.error_fields.indexOf(ztField) > -1 and $scope.fieldModified(ztField, index)
+      $scope.fieldUpdated = (ztField, index) ->
+        $scope.updated_fields.indexOf(ztField) > -1
     templateUrl: "ztf-form.html"
   ]
