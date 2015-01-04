@@ -9,8 +9,9 @@
       s while !(s = (s || scope).$parent).hasOwnProperty('isZtfForm')
       scope.form = s
       scope.canAdd = isDefined(attrs.ztAdd)
-      scope.canRemove = isDefined(attrs.ztDelete)
+      scope.canDelete = isDefined(attrs.ztDelete)
       scope.editable = scope.form.editable
+      scope.inline = isDefined(attrs.ztInline)
       scope.form.$watch ->
         scope.form.editable
       , ->
@@ -38,8 +39,12 @@
           false
       $scope.fieldValue = (ztField, index, data) ->
         if data
-          if $scope.superItem().data[$scope.ztField].length > index
-            $scope.superItem().data[$scope.ztField][index][ztField]
+          # when looking for the original field, first check if the copy field has the _index
+          if isDefined($scope.superItem().copy[$scope.ztField][index]._index)
+            _index = $scope.superItem().copy[$scope.ztField][index]._index
+            #this means this is one of originally fetched fields which DO have the data
+            #use that index, not the copy index
+            $scope.superItem().data[$scope.ztField][_index][ztField]
           else
             null
         else
@@ -60,4 +65,6 @@
         $scope.form.updated_fields.indexOf("#{$scope.ztField}[#{index}].#{ztSubField}") > -1
       $scope.add = ->
         $scope.subitems().push new Object()
+      $scope.delete = (index) ->
+        $scope.subitems().splice(index, 1)
     templateUrl: "ztf-subform.html" 

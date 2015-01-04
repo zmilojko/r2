@@ -100,6 +100,10 @@
       @front_end_buffer = []
       container = this
       for d, i in resp.data.list
+        # add indexes to each array
+        for own field of d when d[field] instanceof Array
+          for list_item, i2 in d[field]
+            list_item._index = i2
         @front_end_buffer.push
           data: d
           copy: angular.copy(d)
@@ -107,6 +111,9 @@
             me = this
             container.update(me)
             .then ->
+              for own field of me.copy when me.copy[field] instanceof Array
+                for list_item, i2 in me.copy[field]
+                  list_item._index = i2
               me.data = angular.copy(me.copy)
           revert: ->
             this.copy = angular.copy(this.data)

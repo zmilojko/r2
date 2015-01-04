@@ -8,7 +8,7 @@
       %ztf-form(lockable)
         %ztf-textbox(zt-field="name" zt-label="name") Name
         %ztf-checkbox(zt-field="do_use_as_tag") Use as tag.
-        %ztf-subform(zt-field="keywords" zt-add zt-delete zt-title="Alternative keywords:" ng-if="item.copy.do_use_as_tag")
+        %ztf-subform(zt-field="keywords" zt-add zt-delete zt-inline zt-title="Alternative keywords:" ng-if="item.copy.do_use_as_tag")
           %ztf-textbox(zt-field="word") Keyword
         %ztf-checkbox(zt-field="do_use_as_keyword") Use as keyword.
         %ztf-checkbox(zt-field="do_use_as_product_description")

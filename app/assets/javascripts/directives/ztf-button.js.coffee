@@ -30,9 +30,16 @@
           'glyphicon-remove'
         else if isDefined(attrs.edit)
           'glyphicon-pencil'
+        else if isDefined(attrs.add)
+          'glyphicon-plus'
+        else if isDefined(attrs.delete)
+          'glyphicon-trash'
       scope.hideMe = ->
-        if isDefined(attrs.commit) or isDefined(attrs.cancel)
+        if isDefined(attrs.commit) or isDefined(attrs.cancel) or isDefined(attrs.add) or isDefined(attrs.delete)
           !scope.form.editable
         else if isDefined(attrs.edit)
           scope.form.editable
+    controller: ($scope) ->
+      $scope.index = ->
+        if isDefined($scope.$parent.$parent.$index) then $scope.$parent.$parent.$index else null
     templateUrl: "ztf-button.html"

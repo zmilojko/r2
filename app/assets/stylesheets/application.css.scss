@@ -69,8 +69,6 @@ _input.ng-dirty {
   float: left;
   clear: none;
   display: inline;
-  //margin-right: 6px;
-  //height: 34px;
   min-height: 26px;
 }
 
@@ -81,11 +79,17 @@ _input.ng-dirty {
 ztf-button>.btn {
   margin: 10px 0px;
 }
+
+.ztf-subitem ztf-button>.btn {
+  margin: 0px 0px 0px 6px;
+}
+
+.ztf-subitem {
+  margin-top: 10px;
+}
+
 .zt-inline>.btn {
   margin: -10px 0px;
-}
-.zt.inline>.input-group {
-  
 }
 
 .zt-inline .zt-label{
