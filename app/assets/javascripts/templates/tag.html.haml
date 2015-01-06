@@ -24,3 +24,27 @@
       %zt-auto-checkbox(zt-field="do_ignore_word") Ignore.
       %button.btn.btn-default(ng-click="previousWord()" ng-disabled="item.is_first") Previous
       %button.btn.btn-default(ng-click="nextWord()" ng-disabled="item.is_last") Next
+    .col-sm-6.col-xs-12
+      %h3 Vocabulary, different UIs
+      %ul
+        %li
+          %a(href="#tags")
+            %h4 Single form, manual text field update
+        %li
+          %a(href="#tagsa")
+            %h4 Single form, auto text field update
+        %li
+          %a(href="#tags/page/1")
+            %h4 List, manual text update
+        %li
+          %a(href="#tagsa/page/1")
+            %h4 List, auto text update
+        %li
+          %a(href="#tagform")
+            %h4 Form update, single form
+        %li
+          %a(href="#tagform/new")
+            %h4 Form for new item
+        %li
+          %a(href="#tagform/page/1")
+            %h4 Form update, page
